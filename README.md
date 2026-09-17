@@ -1,1 +1,2 @@
-# ProjetJeux2026
+## ProjetJeux2026
+equipe : alternants
