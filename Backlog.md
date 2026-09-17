@@ -1,13 +1,14 @@
 # Backlog
 ## Idée générale : TOMA DASH ; JUMPING THOM'ASS
-- Dinosaure 404
-- Thomas
-- Etoile mario / maximator
-- Ennemis à éviter
+- Faire se déplacer un personnage automatiquement tout en évitant des obstacles et ennemis aléatoires
 - défilement automatique
 - niveau infini
+- Les niveaux ont une fin
+- Des bonus 
+  - Etoile mario / maximator
 
-- 1er sprint 3 semaines :
+
+## 1er sprint 3 semaines :
 - avoir le défilement automatique
 - notre personnage
 - obstacles 
