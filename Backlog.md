@@ -1,6 +1,9 @@
 # Backlog
 ## Idée générale : TOMA DASH ; JUMPING THOM'ASS
 - Faire se déplacer un personnage automatiquement tout en évitant des obstacles et ennemis générés aléatoirement.
+
+  __HC: automatiquement?__
+  
 - Le niveau est infini, le score augmente avec la distance parcourue
 - défilement automatique / niveau infini
 - Des boss au bout d'un certains temps
@@ -12,6 +15,14 @@ Objectif : une première version qui tourne? Le décor défile, le personnage sa
 - En tant que joueur, je veux voir le décor défiler tout seul pour avoir la sensation d'avancer
 - En tant que joueur, je veux faire sauter mon personnage avec la barre d'espace pour éviter ce qui arrive
 - En tant que joueur, je veux rencontrer des obstacles placés aléatoirement pour que chaque partie soit différente
+
+  __HC: quelle différence entre 2ème et 3ème item?__
+
+  __HC: il se passe quoi si je saute pas?__
+
+  __HC: il y a des trous ou juste des obstacles?__
+
+  __HC: on pourrait être plus ambitieux pour un travail à 5 pendant 3 semaines__
 
 ## 2eme sprint 3 semaines :
 - faire la partie graphique
