@@ -50,11 +50,11 @@ En tant que joueur, je veux voir mon score pendant la partie, et un écran game 
 
 | Rôle | Membre | Stories |
 |------|--------|---------|
-| Moteur de jeu (fenêtre, boucle, clavier, perspective) | _à remplir_ | socle commun |
-| Route | _à remplir_ | US1 |
-| Personnage | _à remplir_ | US2, US3 |
-| Obstacles | _à remplir_ | US4 |
-| Score et game over | _à remplir_ | US5 |
+| Moteur de jeu (fenêtre, boucle, clavier, perspective) | La team | socle commun |
+| Route | Thomas | US1 |
+| Personnage | Lorenzo | US2, US3 |
+| Obstacles | Killian | US4 |
+| Score et game over | Houda | US5 |
 
 ### Planning
 - **Semaine 1 :** le moteur de jeu est prêt, chacun commence sa partie.
