@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -15,16 +17,29 @@ public class Game extends JPanel {
     public static final int HORIZON = HAUTEUR / 3;
     public static final int TAILLE = 50;
 
-    private double y = HAUTEUR;
+    public static final int JOUEUR_Y = HAUTEUR - 150;
+    private int couloir = 0;
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
 
     Timer timer = new Timer(16, e -> {
-        y = y - 5;
         repaint();
     });
     timer.start();
+    setFocusable(true);
+    addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                couloir = couloir - 1;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                couloir = couloir + 1;
+            }
+        }
+});
+
 }
 
     @Override
@@ -37,8 +52,8 @@ public class Game extends JPanel {
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
         g.setColor(Color.RED);
-        g.fillRect(LARGEUR / 2 - TAILLE / 2, (int) y, TAILLE, TAILLE);
-
+        int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;       
+        g.fillRect(centreX - TAILLE / 2, JOUEUR_Y, TAILLE, TAILLE);
 }
 
 }
