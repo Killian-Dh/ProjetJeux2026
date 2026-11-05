@@ -6,6 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
     JFrame fenetre = new JFrame("Jumping Thomas");
+    fenetre.setResizable(false); // Empêche le redimensionnement
     fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     Game moteur = new Game();

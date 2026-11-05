@@ -20,6 +20,14 @@ public class characterController {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     moteur.allerDroite = true;
                 }
+
+                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                    moteur.sauter();
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    moteur.glisser();
+                }
             }
 
             @Override
@@ -32,6 +40,8 @@ public class characterController {
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     moteur.allerDroite = false;
                 }
+
+                
             }
         });
     }
