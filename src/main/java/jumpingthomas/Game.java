@@ -18,7 +18,9 @@ public class Game extends JPanel {
     public static final int TAILLE = 50;
 
     public static final int JOUEUR_Y = HAUTEUR - 150;
-    private int couloir = 0;
+    private int couloir = 0; // joueur au centre
+    public boolean allerGauche;
+    public boolean allerDroite;
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
@@ -28,16 +30,16 @@ public class Game extends JPanel {
     });
     timer.start();
     setFocusable(true);
-    addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                couloir = couloir - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                couloir = couloir + 1;
-            }
-        }
+
+    if (couloir > -1 && allerGauche == true)
+    {
+        couloir -= 1;
+    }
+    if (couloir < 1 && allerDroite == true)
+    {
+        couloir += 1;
+    }
+    
 });
 
 }
