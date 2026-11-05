@@ -1,26 +1,39 @@
 package jumpingthomas;
 
-import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+public class characterController {
 
-public class characterController 
-{
-    //Player Controller/////////////////////////////////////////
-    @addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                couloir = couloir - 1;
-                
+    Game moteur = new Game();
+
+    public characterController() {
+
+        moteur.addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    moteur.allerGauche = true;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    moteur.allerDroite = true;
+                }
             }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                couloir = couloir + 1;
-            }
-        }
-        ////////////////////////////////////////////////
-});
 
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    moteur.allerGauche = false;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    moteur.allerDroite = false;
+                }
+            }
+        });
+    }
 }
