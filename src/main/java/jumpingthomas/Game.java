@@ -18,7 +18,7 @@ public class Game extends JPanel {
     public static final int TAILLE = 50;
 
     public static final int JOUEUR_Y = HAUTEUR - 150;
-    public int couloir = 0; // joueur au centre
+    private int couloir = 0; // joueur au centre
     public boolean allerGauche;
     public boolean allerDroite;
 
