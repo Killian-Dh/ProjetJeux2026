@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 //import java.awt.Graphics2D;
 
-
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -18,6 +18,7 @@ public class Game extends JPanel {
 
     public static final int JOUEUR_Y = HAUTEUR - 150;
     private int couloir = 0; // joueur au centre
+    private int positionJoueur=0;
     public boolean allerGauche;
     public boolean allerDroite;
 
@@ -42,7 +43,7 @@ public class Game extends JPanel {
     
     
     
-    int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;   
+     positionJoueur = LARGEUR / 2 + couloir * LARGEUR / 3;   
 
 }
 
@@ -55,7 +56,11 @@ public class Game extends JPanel {
         g.setColor(new Color(34, 139, 34)); // verte
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
+        //Sprite du joueur
+        //Image joueur = new ImageIcon("joueur.png").getImage();
+
         g.setColor(Color.RED);
+        int centreX = positionJoueur;
         g.fillRect(centreX - TAILLE / 2, JOUEUR_Y, TAILLE, TAILLE);
 }
 
