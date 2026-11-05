@@ -42,7 +42,7 @@ public class Game extends JPanel {
     
     
     
-    
+    int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;   
 
 }
 
@@ -56,7 +56,6 @@ public class Game extends JPanel {
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
         g.setColor(Color.RED);
-        int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;       
         g.fillRect(centreX - TAILLE / 2, JOUEUR_Y, TAILLE, TAILLE);
 }
 
