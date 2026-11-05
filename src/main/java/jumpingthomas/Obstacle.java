@@ -1,4 +1,7 @@
 package jumpingthomas;
+import java.awt.Color;
+import java.awt.Graphics;
+
 
 public class Obstacle {
 
@@ -12,6 +15,24 @@ public class Obstacle {
         this.couloir = couloir;
         this.bas = bas;
         this.distance = 100;   // un nouvel obstacle apparaît toujours à l'horizon
+    }
+
+        // Fait avancer l'obstacle vers le joueur
+    public void avancer(double vitesse) {
+        distance = distance - vitesse;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+    public void dessiner(Graphics g) {
+        double pixelsParUnite = (Game.JOUEUR_Y - Game.HORIZON) / 100.0;
+
+        int y = Game.JOUEUR_Y - (int) (distance * pixelsParUnite);
+        int x = Game.LARGEUR / 2 + couloir * Game.LARGEUR / 3;
+
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(x - Game.TAILLE / 2, y, Game.TAILLE, Game.TAILLE);
     }
 
 

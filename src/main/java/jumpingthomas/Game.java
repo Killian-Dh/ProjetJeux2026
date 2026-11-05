@@ -3,7 +3,6 @@ package jumpingthomas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -20,27 +19,37 @@ public class Game extends JPanel {
     public static final int JOUEUR_Y = HAUTEUR - 150;
     private int couloir = 0;
 
-     public Game() {
-    setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
+    private Obstacle obstacle = new Obstacle(0, false); 
+    private double vitesse = 0.5;                       
 
-    Timer timer = new Timer(16, e -> {
-        repaint();
-    });
-    timer.start();
-    setFocusable(true);
-    addKeyListener(new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                couloir = couloir - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                couloir = couloir + 1;
-            }
-        }
-});
+    public Game() {
+        setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
 
-}
+        Timer timer = new Timer(16, e -> {
+            vitesse = vitesse + 0.0005;       
+            obstacle.avancer(vitesse);        
+
+            if (obstacle.getDistance() < -20) {
+                obstacle = new Obstacle(0, false);
+            }
+
+            repaint();
+        });
+        timer.start();
+
+        setFocusable(true);
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    couloir = couloir - 1;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    couloir = couloir + 1;
+                }
+            }
+        });
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -51,10 +60,10 @@ public class Game extends JPanel {
         g.setColor(new Color(34, 139, 34)); // verte
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
+        obstacle.dessiner(g); 
+
         g.setColor(Color.RED);
-        int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;       
+        int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;
         g.fillRect(centreX - TAILLE / 2, JOUEUR_Y, TAILLE, TAILLE);
+    }
 }
-
-}
-
