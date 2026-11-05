@@ -8,7 +8,10 @@ public class Main {
     JFrame fenetre = new JFrame("Jumping Thomas");
     fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    fenetre.add(new Game());
+    Game moteur = new Game();
+    characterController controller = new characterController(moteur);
+
+    fenetre.add(moteur);
     fenetre.pack();
 
     fenetre.setVisible(true);

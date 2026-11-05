@@ -5,9 +5,8 @@ import java.awt.event.KeyEvent;
 
 public class characterController {
 
-    Game moteur = new Game();
-
-    public characterController() {
+    
+    public characterController(Game moteur) {
 
         moteur.addKeyListener(new KeyAdapter() {
 
