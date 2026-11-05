@@ -23,21 +23,25 @@ public class Game extends JPanel {
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
-
-    Timer timer = new Timer(16, e -> {
+    setFocusable(true);
+    Timer timer = new Timer(16, e -> 
+    {
+        if (couloir > -1 && allerGauche == true)
+        {
+            couloir -= 1;
+            allerGauche = false;
+        }
+        if (couloir < 1 && allerDroite == true)
+        {
+            couloir += 1;
+            allerDroite = false;
+        }
         repaint();
     });
     timer.start();
-    setFocusable(true);
-
-    if (couloir > -1 && allerGauche == true)
-    {
-        couloir -= 1;
-    }
-    if (couloir < 1 && allerDroite == true)
-    {
-        couloir += 1;
-    }
+    
+    
+    
     
 
 }
