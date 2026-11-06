@@ -31,8 +31,13 @@ public class Obstacle {
         int y = Game.JOUEUR_Y - (int) (distance * pixelsParUnite);
         int x = Game.LARGEUR / 2 + couloir * Game.LARGEUR / 3;
 
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(x - Game.TAILLE / 2, y, Game.TAILLE, Game.TAILLE);
+                if (bas) {
+            g.setColor(Color.ORANGE);  // bas : moitié moins haut, on peut sauter
+            g.fillRect(x - Game.TAILLE / 2, y + Game.TAILLE / 2, Game.TAILLE, Game.TAILLE / 2);
+        } else {
+            g.setColor(Color.DARK_GRAY); // haut : il faut changer de couloir
+            g.fillRect(x - Game.TAILLE / 2, y, Game.TAILLE, Game.TAILLE);
+        }
     }
 
 
