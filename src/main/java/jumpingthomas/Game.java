@@ -19,20 +19,15 @@ public class Game extends JPanel {
     public static final int JOUEUR_Y = HAUTEUR - 150;
     private int couloir = 0;
 
-    private Obstacle obstacle = new Obstacle(0, false); 
+    private GenerateurObstacles generateur = new GenerateurObstacles();    
     private double vitesse = 0.5;                       
 
     public Game() {
         setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
 
         Timer timer = new Timer(16, e -> {
-            vitesse = vitesse + 0.0005;       
-            obstacle.avancer(vitesse);        
-
-            if (obstacle.getDistance() < -20) {
-                obstacle = new Obstacle(0, false);
-            }
-
+            vitesse = vitesse + 0.0005;
+            generateur.mettreAJour(vitesse);
             repaint();
         });
         timer.start();
@@ -60,7 +55,7 @@ public class Game extends JPanel {
         g.setColor(new Color(34, 139, 34)); // verte
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
-        obstacle.dessiner(g); 
+        generateur.dessiner(g);
 
         g.setColor(Color.RED);
         int centreX = LARGEUR / 2 + couloir * LARGEUR / 3;
