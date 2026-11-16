@@ -21,11 +21,11 @@ public class characterController {
                     moteur.allerDroite = true;
                 }
 
-                if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
                     moteur.sauter();
                 }
 
-                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     moteur.glisser();
                 }
             }
