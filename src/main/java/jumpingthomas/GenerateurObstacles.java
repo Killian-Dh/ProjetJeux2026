@@ -18,8 +18,7 @@ public class GenerateurObstacles {
         }
 
         // 2. on supprime ceux qui ont dépassé le joueur
-        obstacles.removeIf(o -> o.getDistance() < -20);
-
+        obstacles.removeIf(o -> o.getDistance() < -5);
         // 3. est-ce qu'il est temps de créer une nouvelle vague ?
         avantProchaineVague = avantProchaineVague - vitesse;
         if (avantProchaineVague <= 0) {
@@ -55,9 +54,9 @@ public class GenerateurObstacles {
         }
     }
 
-    public void dessiner(Graphics g) {
-        for (Obstacle o : obstacles) {
-            o.dessiner(g);
+        public void dessiner(Graphics g) {
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
+            obstacles.get(i).dessiner(g);
         }
     }
 }

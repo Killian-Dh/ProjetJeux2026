@@ -25,19 +25,15 @@ public class Obstacle {
     public double getDistance() {
         return distance;
     }
-    public void dessiner(Graphics g) {
-        double pixelsParUnite = (Game.JOUEUR_Y - Game.HORIZON) / 100.0;
+        public void dessiner(Graphics g) {
+        double e = Perspective.echelle(distance);
+        int largeur = (int) (Game.TAILLE * e);
+        int hauteur = bas ? largeur / 2 : largeur;   // bas = moitié moins haut
+        int x = Perspective.x(couloir, distance);
+        int ySol = Perspective.ySol(distance);
 
-        int y = Game.JOUEUR_Y - (int) (distance * pixelsParUnite);
-        int x = Game.LARGEUR / 2 + couloir * Game.LARGEUR / 3;
-
-                if (bas) {
-            g.setColor(Color.ORANGE);  // bas : moitié moins haut, on peut sauter
-            g.fillRect(x - Game.TAILLE / 2, y + Game.TAILLE / 2, Game.TAILLE, Game.TAILLE / 2);
-        } else {
-            g.setColor(Color.DARK_GRAY); // haut : il faut changer de couloir
-            g.fillRect(x - Game.TAILLE / 2, y, Game.TAILLE, Game.TAILLE);
-        }
+        g.setColor(bas ? Color.ORANGE : Color.DARK_GRAY);
+        g.fillRect(x - largeur / 2, ySol - hauteur, largeur, hauteur);
     }
 
 
