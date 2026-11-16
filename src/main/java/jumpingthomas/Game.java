@@ -3,9 +3,7 @@ package jumpingthomas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-//import java.awt.Graphics2D;
 import java.awt.Image;
-
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -35,6 +33,10 @@ public class Game extends JPanel {
     private boolean enGlissade = false; // état de glissade
     public boolean intouchable = false; // état d'invincibilité
 
+    // Obstacles (Killian)
+    private GenerateurObstacles generateur = new GenerateurObstacles();
+    private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
+
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
     
@@ -46,6 +48,9 @@ public class Game extends JPanel {
         changerVoie();
         
         positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3; 
+
+        vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
+        generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
         
         repaint();
     });
@@ -66,7 +71,7 @@ public class Game extends JPanel {
         g.setColor(new Color(34, 139, 34)); // verte
         g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
 
-        
+        generateur.dessiner(g); // obstacles AVANT le joueur, pour que le joueur passe devant
 
         g.setColor(Color.RED);
         int centreX = positionJoueurX;
@@ -139,4 +144,3 @@ private void changerVoie(){
     }
     }
 }
-
