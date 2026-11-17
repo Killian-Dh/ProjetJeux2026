@@ -45,34 +45,24 @@ public class Game extends JPanel {
     
 
     setFocusable(true);
-    Timer timer = new Timer(16, e -> 
+        Timer timer = new Timer(16, e -> 
     {
-        
+        if (gameOver) {
+            imagesDepuisExplosion++;   // seule l'explosion avance
+            repaint();
+            return;                    // le reste du jeu est figé
+        }
+
         changerVoie();
         
         positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3; 
 
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-        if (generateur.toucheJoueur(couloir, enSaut)) {
-                    if (gameOver) {
-            imagesDepuisExplosion++;   // seule l'explosion avance
-            repaint();
-            return;                    // on s'arrête là : le reste du jeu est figé
-        }
-
-        changerVoie();
-        positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3;
-
-        vitesse = vitesse + 0.0005;
-        generateur.mettreAJour(vitesse);
 
         if (generateur.toucheJoueur(couloir, enSaut)) {
             gameOver = true;
             imagesDepuisExplosion = 0;
-        }
-
-        repaint();
         }
 
         repaint();
