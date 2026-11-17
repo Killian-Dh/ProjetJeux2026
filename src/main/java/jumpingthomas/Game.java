@@ -4,7 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-
+import java.awt.Font;
+import java.awt.FontMetrics;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -36,6 +37,8 @@ public class Game extends JPanel {
     // Obstacles (Killian)
     private GenerateurObstacles generateur = new GenerateurObstacles();
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
+    private boolean gameOver = false;
+    private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
@@ -52,8 +55,24 @@ public class Game extends JPanel {
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
         if (generateur.toucheJoueur(couloir, enSaut)) {
-            System.out.println("Game over");
-            ((Timer) e.getSource()).stop();   // arrête le jeu (temporaire, en attendant l'écran game over)
+                    if (gameOver) {
+            imagesDepuisExplosion++;   // seule l'explosion avance
+            repaint();
+            return;                    // on s'arrête là : le reste du jeu est figé
+        }
+
+        changerVoie();
+        positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3;
+
+        vitesse = vitesse + 0.0005;
+        generateur.mettreAJour(vitesse);
+
+        if (generateur.toucheJoueur(couloir, enSaut)) {
+            gameOver = true;
+            imagesDepuisExplosion = 0;
+        }
+
+        repaint();
         }
 
         repaint();
@@ -99,7 +118,9 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
         }
-        
+            if (gameOver) {
+            dessinerGameOver(g);
+        }    
         
 }
 public void sauter() {
@@ -146,5 +167,48 @@ private void changerVoie(){
         timerGlisse.setRepeats(false);
         timerGlisse.start();
     }
+    }
+
+        private void dessinerGameOver(Graphics g) {
+        int x = positionJoueurX;
+        int y = JOUEUR_Y + TAILLE / 2;
+
+        if (imagesDepuisExplosion < 40) {
+            // Explosion : deux cercles qui grossissent (40 images, environ 0,6 seconde)
+            int rayon = imagesDepuisExplosion * 4;
+            g.setColor(Color.ORANGE);
+            g.fillOval(x - rayon, y - rayon, rayon * 2, rayon * 2);
+            g.setColor(Color.YELLOW);
+            g.fillOval(x - rayon / 2, y - rayon / 2, rayon, rayon);
+        } else {
+            // Voile noir transparent sur tout l'écran
+            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
+            g.fillRect(0, 0, LARGEUR, HAUTEUR);
+
+            // "GAME OVER" centré
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 60));
+            FontMetrics fm = g.getFontMetrics();
+            String texte = "GAME OVER";
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
+
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.PLAIN, 22));
+            fm = g.getFontMetrics();
+            texte = "Appuie sur Entrée pour rejouer";
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+        }
+    }
+
+    public void rejouer() {
+        if (!gameOver) {
+            return;  // Entrée ne fait rien pendant la partie
+        }
+        generateur.reinitialiser();
+        vitesse = 0.5;
+        couloir = 0;
+        allerGauche = false;
+        allerDroite = false;
+        gameOver = false;
     }
 }

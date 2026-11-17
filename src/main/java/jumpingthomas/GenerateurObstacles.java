@@ -27,6 +27,12 @@ public class GenerateurObstacles {
         }
     }
 
+    // Vide la route pour une nouvelle partie
+    public void reinitialiser() {
+        obstacles.clear();
+        avantProchaineVague = 0;
+    }
+
     // Pour l'instant : un seul obstacle dans un couloir au hasard
         // Crée une vague : pour chaque couloir, vide, bas ou haut au hasard
     private void creerVague() {

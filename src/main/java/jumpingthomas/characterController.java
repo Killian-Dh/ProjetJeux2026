@@ -28,6 +28,10 @@ public class characterController {
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     moteur.glisser();
                 }
+
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    moteur.rejouer();
+                }
             }
 
             @Override
