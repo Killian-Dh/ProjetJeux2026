@@ -9,6 +9,9 @@ import java.awt.FontMetrics;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 public class Game extends JPanel {
 
@@ -39,10 +42,12 @@ public class Game extends JPanel {
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
     private boolean gameOver = false;
     private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
+    private Image[] explosion; // les images de l'animation d'explosion
+
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
-    
+    chargerExplosion();
 
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
@@ -163,14 +168,13 @@ private void changerVoie(){
         int x = positionJoueurX;
         int y = JOUEUR_Y + TAILLE / 2;
 
-        if (imagesDepuisExplosion < 40) {
-            // Explosion : deux cercles qui grossissent (40 images, environ 0,6 seconde)
-            int rayon = imagesDepuisExplosion * 4;
-            g.setColor(Color.ORANGE);
-            g.fillOval(x - rayon, y - rayon, rayon * 2, rayon * 2);
-            g.setColor(Color.YELLOW);
-            g.fillOval(x - rayon / 2, y - rayon / 2, rayon, rayon);
-        } else {
+        int numeroImage = imagesDepuisExplosion / 4;  // change d'image toutes les 4 images du jeu
+        if (numeroImage < explosion.length) {
+            int taille = 250;
+            int solJoueur = JOUEUR_Y + 120;  // les roues du cycliste
+            // posée au sol : le bas de l'image est au niveau des roues
+            g.drawImage(explosion[numeroImage], x - taille / 2, solJoueur - taille, taille, taille, this); 
+            }else {
             // Voile noir transparent sur tout l'écran
             g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
             g.fillRect(0, 0, LARGEUR, HAUTEUR);
@@ -200,5 +204,22 @@ private void changerVoie(){
         allerGauche = false;
         allerDroite = false;
         gameOver = false;
+    }
+
+    private void chargerExplosion() {
+        try {
+            BufferedImage feuille = ImageIO.read(new File("explosion.png"));
+            int nombre = 16;                               // nombre d'images dans la ligne
+            int l = feuille.getWidth() / nombre;           // largeur d'une image
+            int h = feuille.getHeight();                   // hauteur d'une image
+
+            explosion = new Image[nombre];
+            for (int i = 0; i < nombre; i++) {
+                explosion[i] = feuille.getSubimage(i * l, 0, l, h);  // découpe la case n° i
+            }
+        } catch (Exception ex) {
+            System.out.println("Image d'explosion introuvable : " + ex.getMessage());
+            explosion = new Image[0];  // pas d'explosion, mais le jeu ne plante pas
+        }
     }
 }
