@@ -59,4 +59,14 @@ public class GenerateurObstacles {
             obstacles.get(i).dessiner(g);
         }
     }
+
+        // Est-ce qu'au moins un obstacle touche le joueur ?
+    public boolean toucheJoueur(int couloirJoueur, boolean joueurEnSaut) {
+        for (Obstacle o : obstacles) {
+            if (o.touche(couloirJoueur, joueurEnSaut)) {
+                return true;   // on en a trouvé un, pas besoin de regarder les autres
+            }
+        }
+        return false;          // on a tout parcouru, aucun ne touche
+    }
 }

@@ -10,15 +10,19 @@ public class Obstacle {
     private double distance; // 100 = à l'horizon, 0 = au niveau du joueur
 
     private boolean bas; // true = on peut sauter par-dessus
+    
+    private double distancePrecedente;  // la distance à l'image d'avant
 
     public Obstacle(int couloir, boolean bas) {
         this.couloir = couloir;
         this.bas = bas;
         this.distance = 100;   // un nouvel obstacle apparaît toujours à l'horizon
+        this.distancePrecedente = 100;
     }
 
         // Fait avancer l'obstacle vers le joueur
-    public void avancer(double vitesse) {
+        public void avancer(double vitesse) {
+        distancePrecedente = distance;  // on retient où il était avant de bouger
         distance = distance - vitesse;
     }
 
@@ -34,6 +38,15 @@ public class Obstacle {
 
         g.setColor(bas ? Color.ORANGE : Color.DARK_GRAY);
         g.fillRect(x - largeur / 2, ySol - hauteur, largeur, hauteur);
+    }
+
+    // Est-ce que cet obstacle touche le joueur ?
+        public boolean touche(int couloirJoueur, boolean joueurEnSaut) {
+        boolean memeCouloir = (couloir == couloirJoueur);
+        boolean franchitLeJoueur = (distancePrecedente > 0 && distance <= 0); // passe la "ligne" du joueur à cette image
+        boolean evite = (bas && joueurEnSaut);
+
+        return memeCouloir && franchitLeJoueur && !evite;
     }
 
 

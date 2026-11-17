@@ -51,7 +51,11 @@ public class Game extends JPanel {
 
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-        
+        if (generateur.toucheJoueur(couloir, enSaut)) {
+            System.out.println("Game over");
+            ((Timer) e.getSource()).stop();   // arrête le jeu (temporaire, en attendant l'écran game over)
+        }
+
         repaint();
     });
     timer.start();
