@@ -57,11 +57,13 @@ public class Game extends JPanel {
     private JButton boutonRejouer;
     private JButton boutonMenu;
     private Runnable retourMenu;     // action donnée par Main pour revenir au menu
+    // Route (Thomas)
+    private RouteRenderer route;
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
     chargerExplosion();
-
+    route = new RouteRenderer(LARGEUR, HAUTEUR, HORIZON);   // décor de Thomas
     // Boutons du game over : posés à la main sur le jeu, cachés au départ
     setLayout(null);   // pas de rangement automatique : on place les boutons nous-mêmes
     boutonRejouer = MenuPrincipal.creerBouton("Rejouer", e -> nouvellePartie());
@@ -94,7 +96,7 @@ public class Game extends JPanel {
         
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-
+        route.mettreAJour(vitesse);          // fait défiler la route (Thomas)
         tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
         if (tempsSaut > 700) {
             tempsSaut = 700; // limite la vitesse du saut
@@ -122,11 +124,7 @@ public class Game extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(new Color(135, 206, 235)); // ciel bleu
-        g.fillRect(0, 0, LARGEUR, HAUTEUR);
-
-        g.setColor(new Color(34, 139, 34)); // verte
-        g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
+        route.dessiner(g, this);   // fond + route de Thomas (remplace l'ancien ciel et l'herbe)
 
         generateur.dessiner(g); // obstacles AVANT le joueur, pour que le joueur passe devant
 
@@ -261,6 +259,7 @@ private void changerVoie(){
         couloir = 0;
         allerGauche = false;
         allerDroite = false;
+        route.reinitialiser();   // remet la route à zéro (Thomas)
         etat = Etat.JEU;
         afficherBoutons(false);
     }
