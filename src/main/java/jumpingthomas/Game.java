@@ -25,6 +25,7 @@ public class Game extends JPanel {
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    
     private int couloir = 0; // joueur au centre
     private int positionJoueurX=0;
     
@@ -61,7 +62,7 @@ public class Game extends JPanel {
         changerVoie();
         
         positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3; 
-
+        
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
 
@@ -116,6 +117,7 @@ public class Game extends JPanel {
             if (gameOver) {
             dessinerGameOver(g);
         }    
+        g.drawString("Vitesse : " + vitesse, 20, 35);
         
 }
 public void sauter() {
