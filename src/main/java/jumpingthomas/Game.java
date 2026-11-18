@@ -2,16 +2,17 @@ package jumpingthomas;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
 
 public class Game extends JPanel {
 
@@ -43,7 +44,8 @@ public class Game extends JPanel {
     private boolean gameOver = false;
     private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
     private Image[] explosion; // les images de l'animation d'explosion
-
+    private double score = 0;        // double pour garder les petits morceaux, affiché en int
+    private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
@@ -64,10 +66,13 @@ public class Game extends JPanel {
 
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-
+        score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
             gameOver = true;
             imagesDepuisExplosion = 0;
+            if ((int) score > meilleurScore) {
+                meilleurScore = (int) score;   // nouveau record !
+            }
         }
 
         repaint();
@@ -113,9 +118,11 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
         }
-            if (gameOver) {
+        if (gameOver) {
             dessinerGameOver(g);
-        }    
+        } else {
+            dessinerScore(g);   // le score n'est affiché que pendant la partie
+        }   
         
 }
 public void sauter() {
@@ -189,9 +196,22 @@ private void changerVoie(){
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.PLAIN, 22));
             fm = g.getFontMetrics();
-            texte = "Appuie sur Entrée pour rejouer";
+                        texte = "Appuie sur Entrée pour rejouer";
             g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+
+            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 90);;
+
         }
+    }
+
+        // Score en haut à droite (brouillon, à embellir plus tard)
+    private void dessinerScore(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        String texte = "Score : " + (int) score;
+        int largeurTexte = g.getFontMetrics().stringWidth(texte);
+        g.drawString(texte, LARGEUR - largeurTexte - 20, 40);   // collé à droite, avec 20 px de marge
     }
 
     public void rejouer() {
@@ -199,6 +219,7 @@ private void changerVoie(){
             return;  // Entrée ne fait rien pendant la partie
         }
         generateur.reinitialiser();
+        score = 0;
         vitesse = 0.5;
         couloir = 0;
         allerGauche = false;
