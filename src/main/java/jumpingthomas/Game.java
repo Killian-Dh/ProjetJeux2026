@@ -2,16 +2,18 @@ package jumpingthomas;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Game extends JPanel {
 
@@ -43,20 +45,45 @@ public class Game extends JPanel {
     // Obstacles (Killian)
     private GenerateurObstacles generateur = new GenerateurObstacles();
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
-    private boolean gameOver = false;
+    // Les états possibles du jeu : un seul à la fois
+    public enum Etat { MENU, JEU, GAME_OVER }
+    private Etat etat = Etat.MENU;   // le jeu démarre sur le menu
     private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
     private Image[] explosion; // les images de l'animation d'explosion
+    private double score = 0;        // double pour garder les petits morceaux, affiché en int
+    private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
 
+    // Boutons de l'écran game over
+    private JButton boutonRejouer;
+    private JButton boutonMenu;
+    private Runnable retourMenu;     // action donnée par Main pour revenir au menu
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
     chargerExplosion();
 
+    // Boutons du game over : posés à la main sur le jeu, cachés au départ
+    setLayout(null);   // pas de rangement automatique : on place les boutons nous-mêmes
+    boutonRejouer = MenuPrincipal.creerBouton("Rejouer", e -> nouvellePartie());
+    boutonRejouer.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 90, 250, 55);  // x, y, largeur, hauteur
+    boutonMenu = MenuPrincipal.creerBouton("Menu", e -> allerAuMenu());
+    boutonMenu.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 165, 250, 55);
+    add(boutonRejouer);
+    add(boutonMenu);
+    afficherBoutons(false);
+
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
     {
-        if (gameOver) {
+        if (etat == Etat.MENU) {
+            return;                    // on est sur le menu : le jeu ne tourne pas
+        }
+
+        if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
+            if (imagesDepuisExplosion / 4 >= explosion.length) {
+                afficherBoutons(true); // explosion finie : on montre les boutons
+            }
             repaint();
             return;                    // le reste du jeu est figé
         }
@@ -73,10 +100,13 @@ public class Game extends JPanel {
             tempsSaut = 700; // limite la vitesse du saut
         }
 
-
+        score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
-            gameOver = true;
+            etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
+            if ((int) score > meilleurScore) {
+                meilleurScore = (int) score;   // nouveau record !
+            }
         }
 
         repaint();
@@ -122,10 +152,11 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
         }
-            if (gameOver) {
+        if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
-        }    
-        g.drawString("Vitesse : " + vitesse, 20, 35);
+        } else {
+            dessinerScore(g);   // le score n'est affiché que pendant la partie
+        }   
         
 }
 public void sauter() {
@@ -199,21 +230,56 @@ private void changerVoie(){
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.PLAIN, 22));
             fm = g.getFontMetrics();
-            texte = "Appuie sur Entrée pour rejouer";
+            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
             g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+
         }
     }
 
+        // Score en haut à droite (brouillon, à embellir plus tard)
+    private void dessinerScore(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        String texte = "Score : " + (int) score;
+        int largeurTexte = g.getFontMetrics().stringWidth(texte);
+        g.drawString(texte, LARGEUR - largeurTexte - 20, 40);   // collé à droite, avec 20 px de marge
+    }
+
+    // Touche Entrée après un game over
     public void rejouer() {
-        if (!gameOver) {
+        if (etat != Etat.GAME_OVER) {
             return;  // Entrée ne fait rien pendant la partie
         }
+        nouvellePartie();
+    }
+
+    // Remet tout à zéro et lance la partie (appelée par le bouton du menu et par rejouer)
+    public void nouvellePartie() {
         generateur.reinitialiser();
         vitesse = 0.5;
+        score = 0;
         couloir = 0;
         allerGauche = false;
         allerDroite = false;
-        gameOver = false;
+        etat = Etat.JEU;
+        afficherBoutons(false);
+    }
+
+    // Bouton "Menu" du game over
+    private void allerAuMenu() {
+        etat = Etat.MENU;
+        afficherBoutons(false);
+        retourMenu.run();   // Main s'occupe de montrer la carte du menu
+    }
+
+    // Main donne ici l'action pour revenir au menu
+    public void setRetourMenu(Runnable action) {
+        retourMenu = action;
+    }
+
+    private void afficherBoutons(boolean visibles) {
+        boutonRejouer.setVisible(visibles);
+        boutonMenu.setVisible(visibles);
     }
 
     private void chargerExplosion() {
