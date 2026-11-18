@@ -240,7 +240,11 @@ private void changerVoie(){
         g.setFont(new Font("Arial", Font.BOLD, 28));
         String texte = "Score : " + (int) score;
         int largeurTexte = g.getFontMetrics().stringWidth(texte);
-        g.drawString(texte, LARGEUR - largeurTexte - 20, 40);   // collé à droite, avec 20 px de marge
+        int x = LARGEUR - largeurTexte - 20;   // collé à droite, avec 20 px de marge
+        g.setColor(Color.BLACK);
+        g.drawString(texte, x + 2, 42);        // l'ombre, décalée de 2 pixels
+        g.setColor(Color.WHITE);
+        g.drawString(texte, x, 40);            // le texte par-dessus   // collé à droite, avec 20 px de marge
     }
 
     // Touche Entrée après un game over
