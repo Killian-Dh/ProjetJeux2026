@@ -41,7 +41,9 @@ public class Game extends JPanel {
     // Obstacles (Killian)
     private GenerateurObstacles generateur = new GenerateurObstacles();
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
-    private boolean gameOver = false;
+    // Les états possibles du jeu : un seul à la fois
+    public enum Etat { MENU, JEU, GAME_OVER }
+    private Etat etat = Etat.MENU;   // le jeu démarre sur le menu
     private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
     private Image[] explosion; // les images de l'animation d'explosion
     private double score = 0;        // double pour garder les petits morceaux, affiché en int
@@ -54,7 +56,11 @@ public class Game extends JPanel {
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
     {
-        if (gameOver) {
+        if (etat == Etat.MENU) {
+            return;                    // on est sur le menu : le jeu ne tourne pas
+        }
+
+        if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
             repaint();
             return;                    // le reste du jeu est figé
@@ -68,7 +74,7 @@ public class Game extends JPanel {
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
         score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
-            gameOver = true;
+            etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
@@ -118,7 +124,7 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
         }
-        if (gameOver) {
+        if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
         } else {
             dessinerScore(g);   // le score n'est affiché que pendant la partie
@@ -214,17 +220,23 @@ private void changerVoie(){
         g.drawString(texte, LARGEUR - largeurTexte - 20, 40);   // collé à droite, avec 20 px de marge
     }
 
+    // Touche Entrée après un game over
     public void rejouer() {
-        if (!gameOver) {
+        if (etat != Etat.GAME_OVER) {
             return;  // Entrée ne fait rien pendant la partie
         }
+        nouvellePartie();
+    }
+
+    // Remet tout à zéro et lance la partie (appelée par le bouton du menu et par rejouer)
+    public void nouvellePartie() {
         generateur.reinitialiser();
-        score = 0;
         vitesse = 0.5;
+        score = 0;
         couloir = 0;
         allerGauche = false;
         allerDroite = false;
-        gameOver = false;
+        etat = Etat.JEU;
     }
 
     private void chargerExplosion() {
