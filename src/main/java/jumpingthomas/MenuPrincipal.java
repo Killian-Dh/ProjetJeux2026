@@ -37,7 +37,7 @@ public class MenuPrincipal extends JPanel {
     }
 
     // Fabrique un bouton : texte + action à faire quand on clique
-    private JButton creerBouton(String texte, ActionListener action) {
+    public static JButton creerBouton(String texte, ActionListener action) {
         JButton bouton = new JButton(texte);
         bouton.setFont(new Font("Arial", Font.BOLD, 22));
         bouton.setAlignmentX(CENTER_ALIGNMENT);

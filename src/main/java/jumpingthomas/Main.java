@@ -25,6 +25,9 @@ public class Main {
             moteur.requestFocusInWindow();    // le clavier va au jeu
         });
 
+                // Bouton "Menu" du game over : on remontre la carte du menu
+        moteur.setRetourMenu(() -> cartes.show(conteneur, "menu"));
+
         conteneur.add(menu, "menu");     // la première carte ajoutée est affichée au départ
         conteneur.add(moteur, "jeu");
 

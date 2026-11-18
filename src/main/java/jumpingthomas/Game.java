@@ -11,6 +11,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -49,9 +50,24 @@ public class Game extends JPanel {
     private double score = 0;        // double pour garder les petits morceaux, affiché en int
     private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
 
+    // Boutons de l'écran game over
+    private JButton boutonRejouer;
+    private JButton boutonMenu;
+    private Runnable retourMenu;     // action donnée par Main pour revenir au menu
+
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
     chargerExplosion();
+
+    // Boutons du game over : posés à la main sur le jeu, cachés au départ
+    setLayout(null);   // pas de rangement automatique : on place les boutons nous-mêmes
+    boutonRejouer = MenuPrincipal.creerBouton("Rejouer", e -> nouvellePartie());
+    boutonRejouer.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 90, 250, 55);  // x, y, largeur, hauteur
+    boutonMenu = MenuPrincipal.creerBouton("Menu", e -> allerAuMenu());
+    boutonMenu.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 165, 250, 55);
+    add(boutonRejouer);
+    add(boutonMenu);
+    afficherBoutons(false);
 
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
@@ -62,6 +78,9 @@ public class Game extends JPanel {
 
         if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
+            if (imagesDepuisExplosion / 4 >= explosion.length) {
+                afficherBoutons(true); // explosion finie : on montre les boutons
+            }
             repaint();
             return;                    // le reste du jeu est figé
         }
@@ -202,11 +221,8 @@ private void changerVoie(){
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.PLAIN, 22));
             fm = g.getFontMetrics();
-                        texte = "Appuie sur Entrée pour rejouer";
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
-
             texte = "Score : " + (int) score + "   Record : " + meilleurScore;
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 90);;
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
 
         }
     }
@@ -237,6 +253,24 @@ private void changerVoie(){
         allerGauche = false;
         allerDroite = false;
         etat = Etat.JEU;
+        afficherBoutons(false);
+    }
+
+    // Bouton "Menu" du game over
+    private void allerAuMenu() {
+        etat = Etat.MENU;
+        afficherBoutons(false);
+        retourMenu.run();   // Main s'occupe de montrer la carte du menu
+    }
+
+    // Main donne ici l'action pour revenir au menu
+    public void setRetourMenu(Runnable action) {
+        retourMenu = action;
+    }
+
+    private void afficherBoutons(boolean visibles) {
+        boutonRejouer.setVisible(visibles);
+        boutonMenu.setVisible(visibles);
     }
 
     private void chargerExplosion() {
