@@ -125,7 +125,7 @@ public class Game extends JPanel {
             if (gameOver) {
             dessinerGameOver(g);
         }    
-        g.drawString("Vitesse : " + vitesse, 20, 35);
+        
         
 }
 public void sauter() {
