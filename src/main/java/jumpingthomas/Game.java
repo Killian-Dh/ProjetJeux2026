@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,6 +29,17 @@ public class Game extends JPanel {
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    private Image mort = new ImageIcon("cycliste_death.png").getImage();
+    private Image cyclisteVol = new ImageIcon("cycliste_vol.png").getImage();
+    private Image cyclisteEcrase = new ImageIcon("cycliste_ecrase.png").getImage();
+    private Image vitreFissuree = new ImageIcon("vitre_fissuree.png").getImage();
+
+    private static int dureeVol = 30;
+    private static int dureeEcrase = 35;
+    private static int dureeGlisse = 50;
+    private static int dureeCrash = dureeVol + dureeEcrase + dureeGlisse;
+    private static int tailleImpact = 500;
+    private static int impactY = 270;
     
     private int couloir = 0; // joueur au centre
     private int positionJoueurX=0;
@@ -83,7 +96,7 @@ public class Game extends JPanel {
 
         if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
-            if (imagesDepuisExplosion / 4 >= explosion.length) {
+            if (imagesDepuisExplosion >= dureeCrash) {  // explosion terminée
                 afficherBoutons(true); // explosion finie : on montre les boutons
             }
             repaint();
@@ -144,7 +157,11 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
         } 
-        else 
+        else if (etat == Etat.GAME_OVER)
+        {
+            // cache le joueur pendant l'animation de défaite
+        }
+        else
         {
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
@@ -203,7 +220,7 @@ private void changerVoie(){
     }
     }
 
-        private void dessinerGameOver(Graphics g) {
+       /* private void dessinerGameOver(Graphics g) {
         int x = positionJoueurX;
         int y = JOUEUR_Y + TAILLE / 2;
 
@@ -232,6 +249,82 @@ private void changerVoie(){
             g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
 
         }
+    }*/
+
+        private void dessinerGameOver(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;   // version "améliorée" de Graphics, qui sait faire tourner
+        int t = imagesDepuisExplosion;    // nombre d'images depuis la collision
+
+        // L'EXPLOSION, au sol, à l'endroit de la collision (dessinée en premier : elle est derrière)
+        int numeroImage = t / 4;          // change d'image toutes les 4 images du jeu
+        if (numeroImage < explosion.length) {
+            int taille = 250;
+            int solJoueur = JOUEUR_Y + 120;  // les roues du cycliste
+            g.drawImage(explosion[numeroImage], positionJoueurX - taille / 2, solJoueur - taille, taille, taille, this);
+        }
+
+
+        if (t < dureeVol) {
+            // PHASE 1 : le cycliste est projeté vers l'écran en tournant
+            double p = (double) t / dureeVol;   // avancement de la phase : de 0 à 1
+            double e = p * p;                    // au carré : lent au début, très rapide à la fin
+            int taille = (int) (TAILLE + (tailleImpact - TAILLE) * e);
+            int cx = (int) (positionJoueurX + (LARGEUR / 2 - positionJoueurX) * e);
+            int cy = (int) (JOUEUR_Y + 60 + (impactY - JOUEUR_Y - 60) * e);
+            double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
+            dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
+            return;
+        }
+        // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
+        int tVitre = t - dureeVol;  // nombre d'images depuis le début de la vitre
+
+        // l'écran tremble pendant les 10 premières images du choc
+        int dx = 0;
+        int dy = 0;
+        if (tVitre < 10) {
+            dx = (int) (Math.random() * 16) - 8;
+            dy = (int) (Math.random() * 16) - 8;
+        }
+
+        // glissade : commence après DUREE_COLLE, de plus en plus vite
+        int glisse = 0;
+        if (tVitre > dureeEcrase) {
+            int s = tVitre - dureeEcrase;  // nombre d'images depuis le début de la glissade
+            glisse = s * s / 3;
+        }
+        dessinerImage(g2, cyclisteEcrase, LARGEUR / 2 + dx, impactY + glisse + dy, tailleImpact, 0);
+
+        // la vitre fissurée PAR-DESSUS le cycliste : il est derrière la vitre
+        int hauteurVitre = HAUTEUR;
+        int largeurVitre = HAUTEUR * vitreFissuree.getWidth(this) / vitreFissuree.getHeight(this);
+        g.drawImage(vitreFissuree, (LARGEUR - largeurVitre) / 2 + dx, dy, largeurVitre, hauteurVitre, this);
+
+        if (t >= dureeCrash) {
+            // Voile noir transparent sur tout l'écran
+            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
+            g.fillRect(0, 0, LARGEUR, HAUTEUR);
+
+            // "GAME OVER" centré
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 60));
+            FontMetrics fm = g.getFontMetrics();
+            String texte = "GAME OVER";
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
+
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.PLAIN, 22));
+            fm = g.getFontMetrics();
+            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+        }
+    }
+    // Dessine une image centrée sur (cx, cy), avec une largeur donnée, tournée d'un angle (en radians)
+    private void dessinerImage(Graphics2D g2, Image img, int cx, int cy, int largeur, double angle) {
+        int hauteur = largeur * img.getHeight(this) / img.getWidth(this);  // garde les proportions
+        AffineTransform avant = g2.getTransform();  // on mémorise la position "normale"
+        g2.rotate(angle, cx, cy);                   // on tourne autour du centre de l'image
+        g2.drawImage(img, cx - largeur / 2, cy - hauteur / 2, largeur, hauteur, this);
+        g2.setTransform(avant);                     // on remet tout droit pour la suite du dessin
     }
 
         // Score en haut à droite (brouillon, à embellir plus tard)
