@@ -62,9 +62,9 @@ public class Game extends JPanel {
     // Boutons du game over : posés à la main sur le jeu, cachés au départ
     setLayout(null);   // pas de rangement automatique : on place les boutons nous-mêmes
     boutonRejouer = MenuPrincipal.creerBouton("Rejouer", e -> nouvellePartie());
-    boutonRejouer.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 90, 250, 55);  // x, y, largeur, hauteur
+    boutonRejouer.setBounds(LARGEUR / 2 - 150, HAUTEUR / 2 + 90, 300, 60);  // x, y, largeur, hauteur
     boutonMenu = MenuPrincipal.creerBouton("Menu", e -> allerAuMenu());
-    boutonMenu.setBounds(LARGEUR / 2 - 125, HAUTEUR / 2 + 165, 250, 55);
+    boutonMenu.setBounds(LARGEUR / 2 - 150, HAUTEUR / 2 + 165, 300, 60);
     add(boutonRejouer);
     add(boutonMenu);
     afficherBoutons(false);
