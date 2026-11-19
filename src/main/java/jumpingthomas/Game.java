@@ -27,6 +27,7 @@ public class Game extends JPanel {
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    
     private int couloir = 0; // joueur au centre
     private int positionJoueurX=0;
     
@@ -35,6 +36,8 @@ public class Game extends JPanel {
     
     private int hauteurSaut = 0; // hauteur du saut
     private boolean enSaut = false;
+    private double tempsSaut = 700; // vitesse verticale du saut
+    private double tempsSautMin = 300;
 
     private boolean enGlissade = false; // état de glissade
     public boolean intouchable = false; // état d'invincibilité
@@ -88,9 +91,15 @@ public class Game extends JPanel {
         changerVoie();
         
         positionJoueurX = LARGEUR / 2 + couloir * LARGEUR / 3; 
-
+        
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
+
+        tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
+        if (tempsSaut > 700) {
+            tempsSaut = 700; // limite la vitesse du saut
+        }
+
         score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
             etat = Etat.GAME_OVER;
@@ -156,7 +165,7 @@ public void sauter() {
         enSaut = true;
         hauteurSaut = -80;
 
-        Timer timerSaut = new Timer(700, e -> {
+        Timer timerSaut = new Timer((int)(tempsSaut), e -> {
             hauteurSaut = 0;
             enSaut = false;
             repaint();
@@ -185,7 +194,7 @@ private void changerVoie(){
         enGlissade = true;
         intouchable = true;
 
-        Timer timerGlisse = new Timer(700, e -> {
+        Timer timerGlisse = new Timer((int)(tempsSaut), e -> {
             enGlissade = false;
             intouchable = false;    
             repaint();
