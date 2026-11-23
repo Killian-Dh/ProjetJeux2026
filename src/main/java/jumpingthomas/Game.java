@@ -2,16 +2,20 @@ package jumpingthomas;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Game extends JPanel {
 
@@ -25,6 +29,17 @@ public class Game extends JPanel {
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+  //  private Image mort = new ImageIcon("cycliste_death.png").getImage();
+    private Image cyclisteVol = new ImageIcon("cycliste_vol.png").getImage();
+    private Image cyclisteEcrase = new ImageIcon("cycliste_ecrase.png").getImage();
+    private Image vitreFissuree = new ImageIcon("vitre_fissuree.png").getImage();
+
+    private static int dureeVol = 30;
+    private static int dureeEcrase = 35;
+    private static int dureeGlisse = 50;
+    private static int dureeCrash = dureeVol + dureeEcrase + dureeGlisse;
+    private static int tailleImpact = 500;
+    private static int impactY = 270;
     
     private int couloir = 0; // joueur au centre
     private int positionJoueurX=0;
@@ -43,20 +58,47 @@ public class Game extends JPanel {
     // Obstacles (Killian)
     private GenerateurObstacles generateur = new GenerateurObstacles();
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
-    private boolean gameOver = false;
+    // Les états possibles du jeu : un seul à la fois
+    public enum Etat { MENU, JEU, GAME_OVER }
+    private Etat etat = Etat.MENU;   // le jeu démarre sur le menu
     private int imagesDepuisExplosion = 0;  // compteur pour animer l'explosion
     private Image[] explosion; // les images de l'animation d'explosion
+    private double score = 0;        // double pour garder les petits morceaux, affiché en int
+    private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
 
+    // Boutons de l'écran game over
+    private JButton boutonRejouer;
+    private JButton boutonMenu;
+    private Runnable retourMenu;     // action donnée par Main pour revenir au menu
+    // Route (Thomas)
+    private RouteRenderer route;
 
      public Game() {
     setPreferredSize(new Dimension(LARGEUR, HAUTEUR));
     chargerExplosion();
+    route = new RouteRenderer(LARGEUR, HAUTEUR, HORIZON);   // décor de Thomas
+    // Boutons du game over : posés à la main sur le jeu, cachés au départ
+    setLayout(null);   // pas de rangement automatique : on place les boutons nous-mêmes
+    boutonRejouer = MenuPrincipal.creerBouton("Rejouer", e -> nouvellePartie());
+    boutonRejouer.setBounds(LARGEUR / 2 - 150, HAUTEUR / 2 + 90, 300, 60);  // x, y, largeur, hauteur
+    boutonMenu = MenuPrincipal.creerBouton("Menu", e -> allerAuMenu());
+    boutonMenu.setBounds(LARGEUR / 2 - 150, HAUTEUR / 2 + 165, 300, 60);
+    add(boutonRejouer);
+    add(boutonMenu);
+    afficherBoutons(false);
 
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
     {
-        if (gameOver) {
+        if (etat == Etat.MENU) {
+            return;                    // on est sur le menu : le jeu ne tourne pas
+        }
+
+        if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
+            if (imagesDepuisExplosion >= dureeCrash) {  // explosion terminée
+                afficherBoutons(true); // explosion finie : on montre les boutons
+            }
             repaint();
             return;                    // le reste du jeu est figé
         }
@@ -67,16 +109,19 @@ public class Game extends JPanel {
         
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-
+        route.mettreAJour(vitesse);          // fait défiler la route (Thomas)
         tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
         if (tempsSaut > 700) {
             tempsSaut = 700; // limite la vitesse du saut
         }
 
-
+        score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
-            gameOver = true;
+            etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
+            if ((int) score > meilleurScore) {
+                meilleurScore = (int) score;   // nouveau record !
+            }
         }
 
         repaint();
@@ -92,11 +137,7 @@ public class Game extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(new Color(135, 206, 235)); // ciel bleu
-        g.fillRect(0, 0, LARGEUR, HAUTEUR);
-
-        g.setColor(new Color(34, 139, 34)); // verte
-        g.fillRect(0, HORIZON, LARGEUR, HAUTEUR - HORIZON);
+        route.dessiner(g, this);   // fond + route de Thomas (remplace l'ancien ciel et l'herbe)
 
         generateur.dessiner(g); // obstacles AVANT le joueur, pour que le joueur passe devant
 
@@ -116,16 +157,21 @@ public class Game extends JPanel {
             int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
         } 
-        else 
+        else if (etat == Etat.GAME_OVER)
+        {
+            // cache le joueur pendant l'animation de défaite
+        }
+        else
         {
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
         }
-            if (gameOver) {
+        if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
-        }    
-        
+        } else {
+            dessinerScore(g);   // le score n'est affiché que pendant la partie
+        }   
         
 }
 public void sauter() {
@@ -174,7 +220,7 @@ private void changerVoie(){
     }
     }
 
-        private void dessinerGameOver(Graphics g) {
+       /* private void dessinerGameOver(Graphics g) {
         int x = positionJoueurX;
         int y = JOUEUR_Y + TAILLE / 2;
 
@@ -199,21 +245,137 @@ private void changerVoie(){
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.PLAIN, 22));
             fm = g.getFontMetrics();
-            texte = "Appuie sur Entrée pour rejouer";
+            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+
+        }
+    }*/
+
+        private void dessinerGameOver(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;   // version "améliorée" de Graphics, qui sait faire tourner
+        int t = imagesDepuisExplosion;    // nombre d'images depuis la collision
+
+        // L'EXPLOSION, au sol, à l'endroit de la collision (dessinée en premier : elle est derrière)
+        int numeroImage = t / 4;          // change d'image toutes les 4 images du jeu
+        if (numeroImage < explosion.length) {
+            int taille = 250;
+            int solJoueur = JOUEUR_Y + 120;  // les roues du cycliste
+            g.drawImage(explosion[numeroImage], positionJoueurX - taille / 2, solJoueur - taille, taille, taille, this);
+        }
+
+
+        if (t < dureeVol) {
+            // PHASE 1 : le cycliste est projeté vers l'écran en tournant
+            double p = (double) t / dureeVol;   // avancement de la phase : de 0 à 1
+            double e = p * p;                    // au carré : lent au début, très rapide à la fin
+            int taille = (int) (TAILLE + (tailleImpact - TAILLE) * e);
+            int cx = (int) (positionJoueurX + (LARGEUR / 2 - positionJoueurX) * e);
+            int cy = (int) (JOUEUR_Y + 60 + (impactY - JOUEUR_Y - 60) * e);
+            double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
+            dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
+            return;
+        }
+        // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
+        int tVitre = t - dureeVol;  // nombre d'images depuis le début de la vitre
+
+        // l'écran tremble pendant les 10 premières images du choc
+        int dx = 0;
+        int dy = 0;
+        if (tVitre < 10) {
+            dx = (int) (Math.random() * 16) - 8;
+            dy = (int) (Math.random() * 16) - 8;
+        }
+
+        // glissade : commence après DUREE_COLLE, de plus en plus vite
+        int glisse = 0;
+        if (tVitre > dureeEcrase) {
+            int s = tVitre - dureeEcrase;  // nombre d'images depuis le début de la glissade
+            glisse = s * s / 3;
+        }
+        dessinerImage(g2, cyclisteEcrase, LARGEUR / 2 + dx, impactY + glisse + dy, tailleImpact, 0);
+
+        // la vitre fissurée PAR-DESSUS le cycliste : il est derrière la vitre
+        int hauteurVitre = HAUTEUR;
+        int largeurVitre = HAUTEUR * vitreFissuree.getWidth(this) / vitreFissuree.getHeight(this);
+        g.drawImage(vitreFissuree, (LARGEUR - largeurVitre) / 2 + dx, dy, largeurVitre, hauteurVitre, this);
+
+        if (t >= dureeCrash) {
+            // Voile noir transparent sur tout l'écran
+            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
+            g.fillRect(0, 0, LARGEUR, HAUTEUR);
+
+            // "GAME OVER" centré
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 60));
+            FontMetrics fm = g.getFontMetrics();
+            String texte = "GAME OVER";
+            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
+
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.PLAIN, 22));
+            fm = g.getFontMetrics();
+            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
             g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
         }
     }
+    // Dessine une image centrée sur (cx, cy), avec une largeur donnée, tournée d'un angle (en radians)
+    private void dessinerImage(Graphics2D g2, Image img, int cx, int cy, int largeur, double angle) {
+        int hauteur = largeur * img.getHeight(this) / img.getWidth(this);  // garde les proportions
+        AffineTransform avant = g2.getTransform();  // on mémorise la position "normale"
+        g2.rotate(angle, cx, cy);                   // on tourne autour du centre de l'image
+        g2.drawImage(img, cx - largeur / 2, cy - hauteur / 2, largeur, hauteur, this);
+        g2.setTransform(avant);                     // on remet tout droit pour la suite du dessin
+    }
 
+        // Score en haut à droite (brouillon, à embellir plus tard)
+    private void dessinerScore(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        String texte = "Score : " + (int) score;
+        int largeurTexte = g.getFontMetrics().stringWidth(texte);
+        int x = LARGEUR - largeurTexte - 20;   // collé à droite, avec 20 px de marge
+        g.setColor(Color.BLACK);
+        g.drawString(texte, x + 2, 42);        // l'ombre, décalée de 2 pixels
+        g.setColor(Color.WHITE);
+        g.drawString(texte, x, 40);            // le texte par-dessus   // collé à droite, avec 20 px de marge
+    }
+
+    // Touche Entrée après un game over
     public void rejouer() {
-        if (!gameOver) {
+        if (etat != Etat.GAME_OVER) {
             return;  // Entrée ne fait rien pendant la partie
         }
+        nouvellePartie();
+    }
+
+    // Remet tout à zéro et lance la partie (appelée par le bouton du menu et par rejouer)
+    public void nouvellePartie() {
         generateur.reinitialiser();
         vitesse = 0.5;
+        score = 0;
         couloir = 0;
         allerGauche = false;
         allerDroite = false;
-        gameOver = false;
+        route.reinitialiser();   // remet la route à zéro (Thomas)
+        etat = Etat.JEU;
+        afficherBoutons(false);
+    }
+
+    // Bouton "Menu" du game over
+    private void allerAuMenu() {
+        etat = Etat.MENU;
+        afficherBoutons(false);
+        retourMenu.run();   // Main s'occupe de montrer la carte du menu
+    }
+
+    // Main donne ici l'action pour revenir au menu
+    public void setRetourMenu(Runnable action) {
+        retourMenu = action;
+    }
+
+    private void afficherBoutons(boolean visibles) {
+        boutonRejouer.setVisible(visibles);
+        boutonMenu.setVisible(visibles);
     }
 
     private void chargerExplosion() {
