@@ -161,6 +161,18 @@ public class Game extends JPanel {
         {
             // cache le joueur pendant l'animation de défaite
         }
+        else if (allerDroite)
+        {
+            int largeur = TAILLE;
+            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
+            g.drawImage(idle, centreX - largeur/2 + 75, centreY, largeur, hauteur, this);
+        }
+        else if (allerGauche)
+        {
+            int largeur = TAILLE;
+            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
+            g.drawImage(idle, centreX - largeur/2 - 75, centreY, largeur, hauteur, this);
+        }
         else
         {
             int largeur = TAILLE;
@@ -172,6 +184,10 @@ public class Game extends JPanel {
         } else {
             dessinerScore(g);   // le score n'est affiché que pendant la partie
         }   
+
+        //transition d'animation
+        
+        
         
 }
 public void sauter() {
