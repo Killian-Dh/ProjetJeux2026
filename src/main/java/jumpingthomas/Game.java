@@ -27,6 +27,9 @@ public class Game extends JPanel {
     public static final int JOUEUR_Y = HAUTEUR - 200;
     //Sprite du joueur
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
+    private Image idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+    private boolean imagePedale = false;
+    private static int vitessePedale = 500;
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
     private Image idleDroite = new ImageIcon("cycliste_droite.png").getImage();
@@ -117,6 +120,8 @@ public class Game extends JPanel {
             tempsSaut = 700; // limite la vitesse du saut
         }
 
+        vitessePedale = (int)(350/ vitesse); // la vitesse de pédalage s'accélère avec la vitesse du jeu
+
         score = score + vitesse;     // le score augmente avec la distance parcourue
         if (generateur.toucheJoueur(couloir, enSaut)) {
             etat = Etat.GAME_OVER;
@@ -181,10 +186,15 @@ public class Game extends JPanel {
         }
         else
         {
-            
+            animationPedale();
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
+            if (imagePedale) {
+                g.drawImage(idle2, centreX - largeur/2, centreY, largeur, hauteur, this);
+            }
+            else {
+                g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
+            }
 
         }
         if (etat == Etat.GAME_OVER) {
@@ -417,5 +427,18 @@ private void changerVoie(){
             System.out.println("Image d'explosion introuvable : " + ex.getMessage());
             explosion = new Image[0];  // pas d'explosion, mais le jeu ne plante pas
         }
+    }
+    Timer timerPedale;
+    private void animationPedale(){
+        
+        if (timerPedale != null && timerPedale.isRunning()) {
+        return;
+        }
+        timerPedale = new Timer(vitessePedale, e -> {
+        imagePedale = !imagePedale;
+        repaint();
+        });
+
+        timerPedale.start();
     }
 }
