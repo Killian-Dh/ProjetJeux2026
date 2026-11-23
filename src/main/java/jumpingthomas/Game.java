@@ -29,6 +29,8 @@ public class Game extends JPanel {
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
     private Image saut = new ImageIcon("cycliste_saute.png").getImage();
     private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    private Image idleDroite = new ImageIcon("cycliste_droite.png").getImage();
+    private Image idleGauche = new ImageIcon("cycliste_gauche.png").getImage();
     private Image mort = new ImageIcon("cycliste_death.png").getImage();
     private Image cyclisteVol = new ImageIcon("cycliste_vol.png").getImage();
     private Image cyclisteEcrase = new ImageIcon("cycliste_ecrase.png").getImage();
@@ -161,23 +163,29 @@ public class Game extends JPanel {
         {
             // cache le joueur pendant l'animation de défaite
         }
-        else if (allerDroite)
+        else if (allerDroite && couloir < 1)
         {
+            
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idle, centreX - largeur/2 + 75, centreY, largeur, hauteur, this);
+            g.drawImage(idleDroite, centreX - largeur/2 + 75, centreY, largeur, hauteur, this); //+75
+            
         }
-        else if (allerGauche)
+        else if (allerGauche && couloir > -1)
         {
+            
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idle, centreX - largeur/2 - 75, centreY, largeur, hauteur, this);
+            g.drawImage(idleGauche, centreX - largeur/2 -75, centreY, largeur, hauteur, this); //-75
+            
         }
         else
         {
+            
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
             g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
+
         }
         if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
@@ -185,7 +193,7 @@ public class Game extends JPanel {
             dessinerScore(g);   // le score n'est affiché que pendant la partie
         }   
 
-        //transition d'animation
+        
         
         
         
