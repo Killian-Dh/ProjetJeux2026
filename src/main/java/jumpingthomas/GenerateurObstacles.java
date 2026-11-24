@@ -67,9 +67,17 @@ public class GenerateurObstacles {
 
     // Obstacles PLUS LOIN que le joueur : dessinés AVANT lui (ils sont derrière)
     public void dessinerDerriere(Graphics g) {
-        for (int i = obstacles.size() - 1; i >= 0; i--) {   // du plus loin au plus proche
+        // 1. d'abord TOUS les trous : ils sont dans le sol, donc toujours sous le reste
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
             Obstacle o = obstacles.get(i);
-            if (o.getDistance() > 0) {
+            if (o.estUnTrou()) {
+                o.dessiner(g);
+            }
+        }
+        // 2. puis les autres obstacles pas encore atteints, du plus loin au plus proche
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
+            Obstacle o = obstacles.get(i);
+            if (!o.estUnTrou() && o.getDistance() > 0) {
                 o.dessiner(g);
             }
         }
@@ -79,7 +87,7 @@ public class GenerateurObstacles {
     public void dessinerDevant(Graphics g) {
         for (int i = obstacles.size() - 1; i >= 0; i--) {
             Obstacle o = obstacles.get(i);
-            if (o.getDistance() <= 0) {
+            if (!o.estUnTrou() && o.getDistance() <= 0) {   // les trous restent sous le joueur {
                 o.dessiner(g);
             }
         }

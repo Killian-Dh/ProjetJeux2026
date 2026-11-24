@@ -29,13 +29,17 @@ public class Obstacle {
 
     // L'oiseau (obstacle GLISSADE) : chargé UNE seule fois pour tous les obstacles (static)
     private static final Image[] OISEAU = chargerAnimation("oiseau.png", 4);
+    private Image TROU = new ImageIcon("trou.png").getImage();  // pour le debug : on voit le trou à franchir
+    private boolean estUnTrou;
     private int age = 0;   // nombre d'images depuis la création de l'obstacle (pour l'animation)
+    
 
     public Obstacle(int couloir, Type type) {
         this.couloir = couloir;
         this.type = type;
         this.distance = 100;   // un nouvel obstacle apparaît toujours à l'horizon
         this.distancePrecedente = 100;
+        this.estUnTrou = (type == Type.BAS && Math.random() < 0.3);   // 30% des barres basses sont des trous dans le sol, pour varier les obstacles
     }
 
         // Fait avancer l'obstacle vers le joueur
@@ -48,13 +52,21 @@ public class Obstacle {
     public double getDistance() {
         return distance;
     }
+
+    public boolean estUnTrou() {
+        return estUnTrou;
+    }
     public void dessiner(Graphics g) {
         double e = Perspective.echelle(distance);
         int largeur = (int) (1.5 * Game.TAILLE * e);
         int x = Perspective.x(couloir, distance);
         int ySol = Perspective.ySol(distance);
 
-        if (type == Type.BAS) {
+        if (estUnTrou) {
+            // le trou est À PLAT sur le sol : large mais peu haut, centré sur la ligne du sol
+            int hauteur = largeur * TROU.getHeight(null) / TROU.getWidth(null);
+            g.drawImage(TROU, x - largeur / 2, ySol - hauteur * 2 / 3, largeur, hauteur, null);
+        } else if (type == Type.BAS) { 
             int hauteur = (int) (largeur / 1.5);
             g.drawImage(barriereBas, x - largeur / 2, ySol - hauteur, largeur, hauteur, null);
         } else if (type == Type.HAUT) {
@@ -78,6 +90,7 @@ public class Obstacle {
             g.fillRect(x - largeur / 2, ySol - hautTotal, largeur, epaisseur);
         }
     }
+    
 
     // Est-ce que cet obstacle touche le joueur ?
     public boolean touche(int couloirJoueur, boolean joueurEnSaut, boolean joueurEnGlissade) {
