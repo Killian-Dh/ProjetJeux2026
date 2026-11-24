@@ -2,7 +2,10 @@ package jumpingthomas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 public class Obstacle {
@@ -15,7 +18,7 @@ public class Obstacle {
     public enum Type {
         BAS,       // barrière basse : on saute
         HAUT,      // barrière haute : on change de couloir
-        GLISSADE   // banderole en hauteur : on glisse dessous
+        GLISSADE   // oiseau en hauteur : on glisse dessous
     }
     private Type type;
     
@@ -23,6 +26,10 @@ public class Obstacle {
 
     private Image barriereBas = new ImageIcon("barriere.png").getImage();
     private Image barriereHaut = new ImageIcon("barriereHaute.png").getImage();
+
+    // L'oiseau (obstacle GLISSADE) : chargé UNE seule fois pour tous les obstacles (static)
+    private static final Image[] OISEAU = chargerAnimation("oiseau.png", 4);
+    private int age = 0;   // nombre d'images depuis la création de l'obstacle (pour l'animation)
 
     public Obstacle(int couloir, Type type) {
         this.couloir = couloir;
@@ -35,6 +42,7 @@ public class Obstacle {
         public void avancer(double vitesse) {
         distancePrecedente = distance;  // on retient où il était avant de bouger
         distance = distance - vitesse;
+        age++;
     }
 
     public double getDistance() {
@@ -52,16 +60,22 @@ public class Obstacle {
         } else if (type == Type.HAUT) {
             int hauteur = (int) (2.0 * Game.TAILLE * e);
             g.drawImage(barriereHaut, x - largeur / 2, ySol - hauteur, largeur, hauteur, null);
+        } else if (OISEAU.length > 0) {
+            // GLISSADE : un oiseau qui vole à hauteur de tête, on passe dessous
+            Image img = OISEAU[(age / 8) % OISEAU.length];   // change d'image toutes les 8 images, en boucle
+            int hauteur = largeur * img.getHeight(null) / img.getWidth(null);
+            int basOiseau = ySol - (int) (Game.TAILLE * e);  // le bas de l'oiseau : juste au-dessus du joueur baissé
+            g.drawImage(img, x - largeur / 2, basOiseau - hauteur, largeur, hauteur, null);
         } else {
-            // GLISSADE (provisoire) : une banderole tenue par 2 poteaux, on passe dessous
-            int hautTotal = (int) (1.5 * Game.TAILLE * e);   // hauteur du haut de la banderole
-            int epaisseur = (int) (0.5 * Game.TAILLE * e);   // épaisseur de la banderole
-            int poteau = Math.max(2, largeur / 12);          // largeur d'un poteau
+            // image introuvable : on garde la banderole rouge, pour que le jeu reste jouable
+            int hautTotal = (int) (1.5 * Game.TAILLE * e);
+            int epaisseur = (int) (0.5 * Game.TAILLE * e);
+            int poteau = Math.max(2, largeur / 12);
             g.setColor(Color.DARK_GRAY);
-            g.fillRect(x - largeur / 2, ySol - hautTotal, poteau, hautTotal);           // poteau gauche
-            g.fillRect(x + largeur / 2 - poteau, ySol - hautTotal, poteau, hautTotal);  // poteau droit
+            g.fillRect(x - largeur / 2, ySol - hautTotal, poteau, hautTotal);
+            g.fillRect(x + largeur / 2 - poteau, ySol - hautTotal, poteau, hautTotal);
             g.setColor(Color.RED);
-            g.fillRect(x - largeur / 2, ySol - hautTotal, largeur, epaisseur);          // la banderole
+            g.fillRect(x - largeur / 2, ySol - hautTotal, largeur, epaisseur);
         }
     }
 
@@ -75,5 +89,21 @@ public class Obstacle {
                      || (type == Type.GLISSADE && joueurEnGlissade);
 
         return memeCouloir && franchitLeJoueur && !evite;
+    }
+
+    // Découpe une spritesheet (images côte à côte sur une ligne) en images séparées
+    private static Image[] chargerAnimation(String fichier, int nombre) {
+        try {
+            BufferedImage feuille = ImageIO.read(new File(fichier));
+            int l = feuille.getWidth() / nombre;
+            Image[] images = new Image[nombre];
+            for (int i = 0; i < nombre; i++) {
+                images[i] = feuille.getSubimage(i * l, 0, l, feuille.getHeight());
+            }
+            return images;
+        } catch (Exception ex) {
+            System.out.println("Image introuvable : " + fichier);
+            return new Image[0];   // tableau vide : on dessinera la banderole à la place
+        }
     }
 }
