@@ -196,9 +196,11 @@ public class Game extends JPanel {
                 g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
             }
 
-            generateur.dessinerDevant(g);   // obstacles déjà passés : dessinés PAR-DESSUS le joueur
 
         }
+
+        generateur.dessinerDevant(g);   // obstacles déjà passés : dessinés PAR-DESSUS le joueur
+
         if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
         } else {
