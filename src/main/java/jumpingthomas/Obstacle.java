@@ -1,9 +1,9 @@
 package jumpingthomas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 
 import javax.swing.ImageIcon;
-import java.awt.Image;
 
 public class Obstacle {
 
@@ -11,16 +11,22 @@ public class Obstacle {
 
     private double distance; // 100 = à l'horizon, 0 = au niveau du joueur
 
-    private boolean bas; // true = on peut sauter par-dessus
+    // Les 3 types d'obstacles, et comment on les évite
+    public enum Type {
+        BAS,       // barrière basse : on saute
+        HAUT,      // barrière haute : on change de couloir
+        GLISSADE   // banderole en hauteur : on glisse dessous
+    }
+    private Type type;
     
     private double distancePrecedente;  // la distance à l'image d'avant
 
     private Image barriereBas = new ImageIcon("barriere.png").getImage();
     private Image barriereHaut = new ImageIcon("barriereHaute.png").getImage();
 
-    public Obstacle(int couloir, boolean bas) {
+    public Obstacle(int couloir, Type type) {
         this.couloir = couloir;
-        this.bas = bas;
+        this.type = type;
         this.distance = 100;   // un nouvel obstacle apparaît toujours à l'horizon
         this.distancePrecedente = 100;
     }
@@ -34,39 +40,40 @@ public class Obstacle {
     public double getDistance() {
         return distance;
     }
-        public void dessiner(Graphics g) {
+    public void dessiner(Graphics g) {
         double e = Perspective.echelle(distance);
         int largeur = (int) (1.5 * Game.TAILLE * e);
-        //int hauteur = bas ? largeur / 2 : largeur;   // bas = moitié moins haut
-        
-        int hauteur = bas ? (int)(largeur/1.5) : (int)(2.0*Game.TAILLE*e);   // bas = moitié moins haut
-        //int hauteur = bas ? (int)(largeur/1.5) : (int)(largeur*1.5);   // bas = moitié moins haut
         int x = Perspective.x(couloir, distance);
         int ySol = Perspective.ySol(distance);
 
-       // g.setColor(bas ? Color.ORANGE : Color.DARK_GRAY);
-        //g.fillRect(x - largeur / 2, ySol - hauteur, largeur, hauteur);
-        if (bas)
-        {
-            g.drawImage(barriereBas, x - largeur/2, ySol - hauteur, largeur, hauteur, null);
+        if (type == Type.BAS) {
+            int hauteur = (int) (largeur / 1.5);
+            g.drawImage(barriereBas, x - largeur / 2, ySol - hauteur, largeur, hauteur, null);
+        } else if (type == Type.HAUT) {
+            int hauteur = (int) (2.0 * Game.TAILLE * e);
+            g.drawImage(barriereHaut, x - largeur / 2, ySol - hauteur, largeur, hauteur, null);
+        } else {
+            // GLISSADE (provisoire) : une banderole tenue par 2 poteaux, on passe dessous
+            int hautTotal = (int) (1.5 * Game.TAILLE * e);   // hauteur du haut de la banderole
+            int epaisseur = (int) (0.5 * Game.TAILLE * e);   // épaisseur de la banderole
+            int poteau = Math.max(2, largeur / 12);          // largeur d'un poteau
+            g.setColor(Color.DARK_GRAY);
+            g.fillRect(x - largeur / 2, ySol - hautTotal, poteau, hautTotal);           // poteau gauche
+            g.fillRect(x + largeur / 2 - poteau, ySol - hautTotal, poteau, hautTotal);  // poteau droit
+            g.setColor(Color.RED);
+            g.fillRect(x - largeur / 2, ySol - hautTotal, largeur, epaisseur);          // la banderole
         }
-        else 
-        {
-            g.drawImage(barriereHaut, x - largeur/2, ySol - hauteur, largeur, hauteur, null);
-        }
-        
     }
 
     // Est-ce que cet obstacle touche le joueur ?
-        public boolean touche(int couloirJoueur, boolean joueurEnSaut) {
+    public boolean touche(int couloirJoueur, boolean joueurEnSaut, boolean joueurEnGlissade) {
         boolean memeCouloir = (couloir == couloirJoueur);
         boolean franchitLeJoueur = (distancePrecedente > 0 && distance <= 0); // passe la "ligne" du joueur à cette image
-        boolean evite = (bas && joueurEnSaut);
+
+        // chaque type ne s'évite qu'avec LA bonne action
+        boolean evite = (type == Type.BAS && joueurEnSaut)
+                     || (type == Type.GLISSADE && joueurEnGlissade);
 
         return memeCouloir && franchitLeJoueur && !evite;
     }
-
-
-
-    
 }
