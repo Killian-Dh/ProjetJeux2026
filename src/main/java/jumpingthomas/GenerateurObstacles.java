@@ -2,6 +2,8 @@ package jumpingthomas;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class GenerateurObstacles {
@@ -34,42 +36,67 @@ public class GenerateurObstacles {
     }
 
     // Pour l'instant : un seul obstacle dans un couloir au hasard
-        // Crée une vague : pour chaque couloir, vide, bas ou haut au hasard
+    // Crée une vague : pour chaque couloir, vide, bas ou haut au hasard
     private void creerVague() {
-        // 0 = vide, 1 = bas, 2 = haut
-        // case 0 = couloir gauche, case 1 = centre, case 2 = droite
-        int[] contenu = new int[3];
-        for (int i = 0; i < 3; i++) {
-            contenu[i] = hasard.nextInt(3);
+        // 1. On mélange les 3 couloirs, comme 3 cartes, pour en tirer sans doublon
+        List<Integer> couloirs = new ArrayList<>(List.of(-1, 0, 1));
+        Collections.shuffle(couloirs, hasard);
+
+        // 2. Combien d'obstacles dans cette vague : 2 ou 3
+        int nombre = 2 + hasard.nextInt(2);
+
+        // 3. Un type au hasard pour chacun
+        Obstacle.Type[] tousLesTypes = Obstacle.Type.values();   // { BAS, HAUT, GLISSADE }
+        Obstacle.Type[] vague = new Obstacle.Type[nombre];
+        for (int i = 0; i < nombre; i++) {
+            vague[i] = tousLesTypes[hasard.nextInt(tousLesTypes.length)];
         }
 
-        // Règle : jamais 3 obstacles hauts, sinon impossible de passer
-        if (contenu[0] == 2 && contenu[1] == 2 && contenu[2] == 2) {
-            contenu[hasard.nextInt(3)] = 1; // l'un des trois devient un obstacle bas
+        // 4. Règle : jamais 3 obstacles hauts, sinon impossible de passer
+        if (nombre == 3 && vague[0] == Obstacle.Type.HAUT
+                        && vague[1] == Obstacle.Type.HAUT
+                        && vague[2] == Obstacle.Type.HAUT) {
+            vague[hasard.nextInt(3)] = Obstacle.Type.BAS;  // l'un des trois devient franchissable
         }
 
-        // On crée les obstacles
-        for (int i = 0; i < 3; i++) {
-            int couloir = i - 1; // case 0 -> couloir -1, case 1 -> 0, case 2 -> 1
-            if (contenu[i] == 1) {
-                obstacles.add(new Obstacle(couloir, true));   // bas
+        // 5. On crée les obstacles dans les couloirs tirés
+        for (int i = 0; i < nombre; i++) {
+            obstacles.add(new Obstacle(couloirs.get(i), vague[i]));
+        }
+    }
+
+    // Obstacles PLUS LOIN que le joueur : dessinés AVANT lui (ils sont derrière)
+    public void dessinerDerriere(Graphics g) {
+        // 1. d'abord TOUS les trous : ils sont dans le sol, donc toujours sous le reste
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
+            Obstacle o = obstacles.get(i);
+            if (o.estUnTrou()) {
+                o.dessiner(g);
             }
-            if (contenu[i] == 2) {
-                obstacles.add(new Obstacle(couloir, false));  // haut
+        }
+        // 2. puis les autres obstacles pas encore atteints, du plus loin au plus proche
+        for (int i = obstacles.size() - 1; i >= 0; i--) {
+            Obstacle o = obstacles.get(i);
+            if (!o.estUnTrou() && o.getDistance() > 0) {
+                o.dessiner(g);
             }
         }
     }
 
-        public void dessiner(Graphics g) {
+    // Obstacles que le joueur a DÉJÀ PASSÉS : dessinés APRÈS lui (ils sont devant, côté caméra)
+    public void dessinerDevant(Graphics g) {
         for (int i = obstacles.size() - 1; i >= 0; i--) {
-            obstacles.get(i).dessiner(g);
+            Obstacle o = obstacles.get(i);
+            if (!o.estUnTrou() && o.getDistance() <= 0) {   // les trous restent sous le joueur {
+                o.dessiner(g);
+            }
         }
     }
 
         // Est-ce qu'au moins un obstacle touche le joueur ?
-    public boolean toucheJoueur(int couloirJoueur, boolean joueurEnSaut) {
+    public boolean toucheJoueur(int couloirJoueur, boolean joueurEnSaut, boolean joueurEnGlissade) {
         for (Obstacle o : obstacles) {
-            if (o.touche(couloirJoueur, joueurEnSaut)) {
+            if (o.touche(couloirJoueur, joueurEnSaut, joueurEnGlissade)) {
                 return true;   // on en a trouvé un, pas besoin de regarder les autres
             }
         }
