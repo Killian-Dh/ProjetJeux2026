@@ -30,6 +30,8 @@ public class MenuPrincipal extends JPanel {
     private JLabel texteVolSon;
     private JLabel texteVolMusique;
     private JLabel titreParametre;
+    private JPanel sliderSon;
+    private JPanel sliderMusique;
 
     private static Image fond = new ImageIcon("fondMenu.png").getImage();
     private static Image FondParametres = new ImageIcon("PageParametre.png").getImage();
@@ -125,18 +127,33 @@ public class MenuPrincipal extends JPanel {
         texteVolMusique.setVisible(afficherParametres);
         texteVolSon.setVisible(afficherParametres);
         titreParametre.setVisible(afficherParametres);
+        sliderSon.setVisible(afficherParametres);
+        sliderMusique.setVisible(afficherParametres);
 
-        JLabel VolumeSon = new JLabel("Volume Sons:");
-        VolumeSon.setFont(new Font("Arial", Font.BOLD, 20));
-        VolumeSon.setBounds(300,300,200,30);
-        JComponent sliderSon = SliderParametres("Volume du son", Game.volumeSon, v -> Game.volumeSon = v);
-        JComponent sliderMusique = SliderParametres("Volume de la musique", Game.volumeMusique, v -> Game.volumeMusique = v);
+        
+
+        /*JPanel sliderMusique = SliderParametres(Game.volumeMusique, v -> Game.volumeMusique = v);
+        sliderMusique.setBounds(50, 100, 300, 50);*/
+        
         repaint();
     }
     private void Parametres()
     {
+
         textParametres();
         boutonCroix();
+        
+        sliderSon = SliderParametres(Game.volumeSon, v -> Game.volumeSon = v);
+        sliderSon.setBounds(75, 430, 280,80);
+        sliderSon.setVisible(false);
+        add(sliderSon);
+
+        sliderMusique = SliderParametres(Game.volumeMusique, v -> Game.volumeMusique = v);
+        sliderMusique.setBounds(75, 505, 280,80);
+        sliderMusique.setVisible(false);
+        add(sliderMusique);
+
+
 
 
     }
@@ -176,21 +193,22 @@ public class MenuPrincipal extends JPanel {
         add(boutonCroix);
     }
 
-    private JPanel SliderParametres(String nom, double valeurInitiale, Consumer<Double> onChange)
+    private JPanel SliderParametres(double valeurInitiale, Consumer<Double> onChange)
     {
         JSlider slider = new JSlider(0, 100, (int) (valeurInitiale * 100));
-        JLabel label = new JLabel(String.format("%s :", nom));
+        
         slider.setOpaque(false);
 
         slider.addChangeListener(e -> {
             double v = slider.getValue() / 100.0;
-            label.setText(String.format("%s :", nom));
+            
             onChange.accept(v); // prévient le jeu de la nouvelle valeur
         });
 
-        JPanel panel = new JPanel();
-        panel.add(label);
-        panel.add(slider);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);   // sinon un fond gris cache l'image
+        panel.add(slider, BorderLayout.CENTER);
+        
         return panel;
     }
 
