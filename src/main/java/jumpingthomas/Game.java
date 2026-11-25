@@ -6,8 +6,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -123,7 +123,7 @@ public class Game extends JPanel {
         vitessePedale = (int)(350/ vitesse); // la vitesse de pédalage s'accélère avec la vitesse du jeu
 
         score = score + vitesse;     // le score augmente avec la distance parcourue
-        if (generateur.toucheJoueur(couloir, enSaut)) {
+        if (generateur.toucheJoueur(couloir, enSaut, enGlissade)) {
             etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
             if ((int) score > meilleurScore) {
@@ -146,7 +146,7 @@ public class Game extends JPanel {
         super.paintComponent(g);
         route.dessiner(g, this);   // fond + route de Thomas (remplace l'ancien ciel et l'herbe)
 
-        generateur.dessiner(g); // obstacles AVANT le joueur, pour que le joueur passe devant
+        generateur.dessinerDerriere(g); // obstacles encore devant lui sur la route : dessinés AVANT le joueur
 
         g.setColor(Color.RED);
         int centreX = positionJoueurX;
@@ -196,7 +196,11 @@ public class Game extends JPanel {
                 g.drawImage(idle, centreX - largeur/2, centreY, largeur, hauteur, this);
             }
 
+
         }
+
+        generateur.dessinerDevant(g);   // obstacles déjà passés : dessinés PAR-DESSUS le joueur
+
         if (etat == Etat.GAME_OVER) {
             dessinerGameOver(g);
         } else {
