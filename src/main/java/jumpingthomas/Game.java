@@ -34,21 +34,33 @@ public class Game extends JPanel {
     private Son explosionSong = new Son("explosionSong.wav");
     private Son mortSong = new Son("LegoBreak.wav");
     private Son sautSong = new Son("WhooshSound.wav");
+    public static double volumeSon = 0.3; // volume sonore par défaut (0 à 1)
+    public static double volumeMusique = 0.3; // volume musique par défaut (0 à 1)
 
     public static final int JOUEUR_Y = HAUTEUR - 200;
     //Sprite du joueur
-    private Image idle = new ImageIcon("cycliste_idle.png").getImage();
-    private Image idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+    /*private Image idle = new ImageIcon("cycliste_idle.png").getImage();
+    private Image idle2 = new ImageIcon("cycliste_idle2.png").getImage();*/
+
+    private Image idle;
+    private Image idle2;
+    private Image saut;
+    private Image glissade;
+
+    
+
     private boolean imagePedale = false;
     private static int vitessePedale = 500;
-    private Image saut = new ImageIcon("cycliste_saute.png").getImage();
-    private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    /*private Image saut = new ImageIcon("cycliste_saute.png").getImage();
+    private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();*/
     private Image idleDroite = new ImageIcon("cycliste_droite.png").getImage();
     private Image idleGauche = new ImageIcon("cycliste_gauche.png").getImage();
     private Image mort = new ImageIcon("cycliste_death.png").getImage();
     private Image cyclisteVol = new ImageIcon("cycliste_vol.png").getImage();
     private Image cyclisteEcrase = new ImageIcon("cycliste_ecrase.png").getImage();
     private Image vitreFissuree = new ImageIcon("vitre_fissuree.png").getImage();
+
+
 
     private static int dureeVol = 30;
     private static int dureeEcrase = 35;
@@ -105,6 +117,38 @@ public class Game extends JPanel {
     add(boutonMenu);
     afficherBoutons(false);
 
+    
+    /*if (MenuPrincipal.selectedType == 1)
+    {
+
+    }*/
+
+    // ou 
+
+    /*int styleSelectionne = MenuPrincipal.selectedType;
+    switch (styleSelectionne)
+    {
+        case 0 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 1 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 2 :
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+     }*/
+
+
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
     {
@@ -142,10 +186,34 @@ public class Game extends JPanel {
             imagesDepuisExplosion = 0;
             musiqueFond.stop();
             explosionSong.jouer(); // joue une fois
+            explosionSong.volume((float) volumeSon);
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
             }
         }
+
+        int styleSelectionne = MenuPrincipal.selectedType;
+    switch (styleSelectionne)
+    {
+        case 0 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 1 : 
+            idle = new ImageIcon("harley_idle.png").getImage();
+            idle2 = new ImageIcon("harley_idle2.png").getImage();
+            saut = new ImageIcon("harley_saut.png").getImage();
+            glissade = new ImageIcon("harley_glissade.png").getImage();
+            break;
+        case 2 :
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+     }
 
         repaint();
     });
@@ -171,41 +239,27 @@ public class Game extends JPanel {
         if (enGlissade) 
         {
             int largeur = (int)(1.5*TAILLE);
-            int hauteur = (int)(2.0*TAILLE * 460.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * glissade.getWidth(this) / glissade.getHeight(this)); // proportion de l'image
             g.drawImage(glissade, centreX - largeur/2, centreY, largeur, hauteur, this);
         } 
         else if (enSaut) 
         {
+            
             sautSong.jouer(); // joue une fois
+            sautSong.volume((float) volumeSon);
             int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * saut.getWidth(this) / saut.getHeight(this)); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
         } 
         else if (etat == Etat.GAME_OVER)
         {
             // cache le joueur pendant l'animation de défaite
         }
-        else if (allerDroite && couloir < 1)
-        {
-            
-            int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idleDroite, centreX - largeur/2 + 75, centreY, largeur, hauteur, this); //+75
-            
-        }
-        else if (allerGauche && couloir > -1)
-        {
-            
-            int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idleGauche, centreX - largeur/2 -75, centreY, largeur, hauteur, this); //-75
-            
-        }
         else
         {
             animationPedale();
             int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * idle.getWidth(this) / idle.getHeight(this)); // proportion de l'image
             if (imagePedale) {
                 g.drawImage(idle2, centreX - largeur/2, centreY, largeur, hauteur, this);
             }
@@ -278,36 +332,6 @@ private void changerVoie(){
     }
     }
 
-       /* private void dessinerGameOver(Graphics g) {
-        int x = positionJoueurX;
-        int y = JOUEUR_Y + TAILLE / 2;
-
-        int numeroImage = imagesDepuisExplosion / 4;  // change d'image toutes les 4 images du jeu
-        if (numeroImage < explosion.length) {
-            int taille = 250;
-            int solJoueur = JOUEUR_Y + 120;  // les roues du cycliste
-            // posée au sol : le bas de l'image est au niveau des roues
-            g.drawImage(explosion[numeroImage], x - taille / 2, solJoueur - taille, taille, taille, this); 
-            }else {
-            // Voile noir transparent sur tout l'écran
-            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
-            g.fillRect(0, 0, LARGEUR, HAUTEUR);
-
-            // "GAME OVER" centré
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 60));
-            FontMetrics fm = g.getFontMetrics();
-            String texte = "GAME OVER";
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
-
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.PLAIN, 22));
-            fm = g.getFontMetrics();
-            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
-
-        }
-    }*/
 
         private void dessinerGameOver(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;   // version "améliorée" de Graphics, qui sait faire tourner
@@ -332,6 +356,7 @@ private void changerVoie(){
             double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
             dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
             mortSong.jouer(); // joue une fois
+            mortSong.volume((float) volumeSon);
             return;
         }
         // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
@@ -460,6 +485,7 @@ private void changerVoie(){
         etat = Etat.JEU;
         afficherBoutons(false);
         musiqueFond.boucle();
+        musiqueFond.volume((float) volumeMusique);
     }
 
     // Bouton "Menu" du game over
