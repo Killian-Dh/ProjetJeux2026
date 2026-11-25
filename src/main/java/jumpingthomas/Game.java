@@ -34,6 +34,8 @@ public class Game extends JPanel {
     private Son explosionSong = new Son("explosionSong.wav");
     private Son mortSong = new Son("LegoBreak.wav");
     private Son sautSong = new Son("WhooshSound.wav");
+    public static double volumeSon = 0.3; // volume sonore par défaut (0 à 1)
+    public static double volumeMusique = 0.3; // volume musique par défaut (0 à 1)
 
     public static final int JOUEUR_Y = HAUTEUR - 200;
     //Sprite du joueur
@@ -139,6 +141,7 @@ public class Game extends JPanel {
             imagesDepuisExplosion = 0;
             musiqueFond.stop();
             explosionSong.jouer(); // joue une fois
+            explosionSong.volume((float) volumeSon);
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
             }
@@ -174,6 +177,7 @@ public class Game extends JPanel {
         else if (enSaut) 
         {
             sautSong.jouer(); // joue une fois
+            sautSong.volume((float) volumeSon);
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
@@ -299,6 +303,7 @@ private void changerVoie(){
             double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
             dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
             mortSong.jouer(); // joue une fois
+            mortSong.volume((float) volumeSon);
             return;
         }
         // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
@@ -386,6 +391,7 @@ private void changerVoie(){
         etat = Etat.JEU;
         afficherBoutons(false);
         musiqueFond.boucle();
+        musiqueFond.volume((float) volumeMusique);
     }
 
     // Bouton "Menu" du game over
