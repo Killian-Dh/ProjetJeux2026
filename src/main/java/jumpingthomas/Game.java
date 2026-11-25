@@ -62,6 +62,8 @@ public class Game extends JPanel {
 
     // Obstacles (Killian)
     private GenerateurObstacles generateur = new GenerateurObstacles();
+    // Pièces à collecter (Houda)
+    private GenerateurPieces generateurPieces = new GenerateurPieces();
     private double vitesse = 0.5; // vitesse de départ, augmente au fil de la partie
     // Les états possibles du jeu : un seul à la fois
     public enum Etat { MENU, JEU, GAME_OVER }
@@ -114,6 +116,7 @@ public class Game extends JPanel {
         
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
+        generateurPieces.mettreAJour(vitesse, couloir);
         route.mettreAJour(vitesse);          // fait défiler la route (Thomas)
         tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
         if (tempsSaut > 700) {
@@ -147,6 +150,7 @@ public class Game extends JPanel {
         route.dessiner(g, this);   // fond + route de Thomas (remplace l'ancien ciel et l'herbe)
 
         generateur.dessiner(g); // obstacles AVANT le joueur, pour que le joueur passe devant
+        generateurPieces.dessiner(g);
 
         g.setColor(Color.RED);
         int centreX = positionJoueurX;
@@ -362,6 +366,46 @@ private void changerVoie(){
     }
 
         // Score en haut à droite (brouillon, à embellir plus tard)
+        private void dessinerScore(Graphics g) {
+            g.setFont(new Font("Arial", Font.BOLD, 28));
+
+        // Score en haut à droite
+        String texteScore = "Score : " + (int) score;
+        int largeurScore = g.getFontMetrics().stringWidth(texteScore);
+        int xScore = LARGEUR - largeurScore - 20;
+
+        g.setColor(Color.BLACK);
+        g.drawString(texteScore, xScore + 2, 42);
+
+        g.setColor(Color.WHITE);
+        g.drawString(texteScore, xScore, 40);
+
+        // Pieces collectees en haut a gauche, sur une ligne distincte
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+
+        String textePieces = "Pieces : " + generateurPieces.getNombrePiecesCollectees();
+
+        g.setColor(Color.BLACK);
+        g.drawString(textePieces, 22, 80);
+
+        g.setColor(Color.YELLOW);
+        g.drawString(textePieces, 20, 78);
+    }
+    /*private void dessinerScore(Graphics g) {
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        // Score
+        String texteScore = "Score : " + (int) score;
+        int largeurScore = g.getFontMetrics().stringWidth(texteScore);
+        int xScore = LARGEUR - largeurScore - 20;
+        g.setColor(Color.BLACK);
+        g.drawString(texteScore, xScore + 2, 42);
+        g.setColor(Color.WHITE);
+        g.drawString(texteScore, xScore, 40);
+        // Pièces collectées
+        String textePieces = "Pieces collectees : " + generateurPieces.getNombrePiecesCollectees();
+        g.setColor(Color.BLACK);
+        g.drawString(textePieces, 22, 40);
+}
     private void dessinerScore(Graphics g) {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 28));
@@ -372,7 +416,7 @@ private void changerVoie(){
         g.drawString(texte, x + 2, 42);        // l'ombre, décalée de 2 pixels
         g.setColor(Color.WHITE);
         g.drawString(texte, x, 40);            // le texte par-dessus   // collé à droite, avec 20 px de marge
-    }
+    }*/
 
     // Touche Entrée après un game over
     public void rejouer() {
@@ -385,6 +429,7 @@ private void changerVoie(){
     // Remet tout à zéro et lance la partie (appelée par le bouton du menu et par rejouer)
     public void nouvellePartie() {
         generateur.reinitialiser();
+        generateurPieces.reinitialiser();
         vitesse = 0.5;
         score = 0;
         couloir = 0;
@@ -441,4 +486,4 @@ private void changerVoie(){
 
         timerPedale.start();
     }
-}
+    }
