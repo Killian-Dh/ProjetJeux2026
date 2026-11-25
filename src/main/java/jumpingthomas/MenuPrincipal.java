@@ -28,7 +28,14 @@ public class MenuPrincipal extends JPanel {
     private static ImageIcon dispBoutonCroix = new ImageIcon("Croix.png");
     
     private JButton boutonCroixPerso;
+    private JButton boutonPlus;
+    private static ImageIcon dispBoutonPlus = new ImageIcon("flecheDroite.png");
+    private JButton boutonMoins;
+    private static ImageIcon dispBoutonMoins = new ImageIcon("flecheGauche.png");
     private JLabel titrePersonalisation;
+    private static Image cases = new ImageIcon("cadre.png").getImage();
+    private static Image style0 = new ImageIcon("velo.png").getImage();
+    private static Image style1 = new ImageIcon("moto.png").getImage();
     
     private JButton boutonCroixParam;
     private JLabel texteVolSon;
@@ -66,8 +73,8 @@ public class MenuPrincipal extends JPanel {
         add(Box.createVerticalStrut(20));
         add(creerBouton("Personnalisation", e -> bientot()));
         add(Box.createVerticalStrut(20));
-        add(creerBouton("Quitter", e -> System.exit(0)));
-        */
+        add(creerBouton("Quitter", e -> System.exit(0)));*/
+        
        setLayout(null); // à la place du BoxLayout
 
         int boutonLarg = 300;
@@ -129,36 +136,71 @@ public class MenuPrincipal extends JPanel {
         c.setVisible(!afficherPersonalisation);
         }
         boutonCroixPerso.setVisible(afficherPersonalisation);
+        boutonPlus.setVisible(afficherPersonalisation);
+        boutonMoins.setVisible(afficherPersonalisation);
+        titrePersonalisation.setVisible(afficherPersonalisation);
 
         repaint();
     }
 
     private void Personnalisation()
     {
-        boutonCroixPerso();
+        boutonsPerso();
         textPersonalisation();
     }
 
     private void textPersonalisation()
     {
         titrePersonalisation = new JLabel("PERSONALISATION");
-        titrePersonalisation.setFont(new Font("Arial", Font.BOLD, 30));
+        titrePersonalisation.setFont(new Font("Arial", Font.BOLD, 27));
         titrePersonalisation.setForeground(Color.BLACK);
-        titrePersonalisation.setBounds(Game.LARGEUR/2 -110, 350, 300, 30);
+        titrePersonalisation.setBounds(Game.LARGEUR/2 -130, 350, 300, 30);
         titrePersonalisation.setVisible(false);
         add(titrePersonalisation);
     }
 
-    private void boutonCroixPerso()
+    private void boutonsPerso()
     {
         boutonCroixPerso = new JButton(dispBoutonCroix);
         boutonCroixPerso.setFocusable(false);
         boutonCroixPerso.setContentAreaFilled(false);
         boutonCroixPerso.setBorderPainted(false);
         boutonCroixPerso.addActionListener(e -> DispPersonalisation());
-        boutonCroixPerso.setBounds(330, 620, 35, 35);
+        boutonCroixPerso.setBounds(330, 665, 35, 35); 
         boutonCroixPerso.setVisible(false);
         add(boutonCroixPerso);
+
+        boutonPlus = new JButton(dispBoutonPlus);
+        boutonPlus.setFocusable(false);
+        boutonPlus.setContentAreaFilled(false);
+        boutonPlus.setBorderPainted(false);
+        boutonPlus.addActionListener(e -> {
+            if (selectedType < 1)
+            {
+                selectedType += 1;
+            }
+            repaint();
+        });
+        boutonPlus.setBounds(250, 565, 70, 70);//25
+        boutonPlus.setVisible(false);
+        add(boutonPlus);
+
+        boutonMoins = new JButton(dispBoutonMoins);
+        boutonMoins.setFocusable(false);
+        boutonMoins.setContentAreaFilled(false);
+        boutonMoins.setBorderPainted(false);
+        boutonMoins.addActionListener(e -> {
+            if (selectedType > 0)
+            {
+                selectedType -= 1;
+            }
+            repaint();
+        });
+        boutonMoins.setBounds(130, 565, 70, 70);
+        boutonMoins.setVisible(false);
+        add(boutonMoins);
+
+
     }
 
 
@@ -181,7 +223,7 @@ public class MenuPrincipal extends JPanel {
     private void Parametres()
     {
         textParametres();
-        boutonCroixParam();
+        boutonsParam();
         
         sliderSon = SliderParametres(Game.volumeSon, v -> Game.volumeSon = v);
         sliderSon.setBounds(75, 430, 280,80);
@@ -218,7 +260,7 @@ public class MenuPrincipal extends JPanel {
         titreParametre.setVisible(false);
         add(titreParametre);
     }
-    private void boutonCroixParam()
+    private void boutonsParam()
     {
         boutonCroixParam = new JButton(dispBoutonCroix);
         boutonCroixParam.setFocusable(false);
@@ -261,9 +303,19 @@ public class MenuPrincipal extends JPanel {
                 
             }
             if (afficherPersonalisation) {
-                int imageLarg = FondParametres.getWidth(this);
-                g.drawImage(FondParametres, (Game.LARGEUR - imageLarg)/2, 325, 325, 350, this);
-                
+                int fondLarg = FondParametres.getWidth(this);
+                int casesLarg = cases.getWidth(this);
+                g.drawImage(FondParametres, (Game.LARGEUR - fondLarg)/2, 325, 325, 400, this);
+                g.drawImage(cases, Game.LARGEUR/2 - casesLarg+25, 400, 150, 150, this);
+                switch (selectedType)
+                {
+                    case 0:
+                        g.drawImage(style0, Game.LARGEUR/2 - casesLarg/2, 415, 100, 100, this);
+                        break;
+                    case 1 :
+                        g.drawImage(style1, Game.LARGEUR/2 -casesLarg/2, 415, 100, 100, this);
+                        break;
+                }
             }
                      
             

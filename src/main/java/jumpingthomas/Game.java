@@ -189,6 +189,29 @@ public class Game extends JPanel {
             }
         }
 
+        int styleSelectionne = MenuPrincipal.selectedType;
+    switch (styleSelectionne)
+    {
+        case 0 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 1 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 2 :
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+     }
+
         repaint();
     });
     timer.start();
@@ -213,7 +236,7 @@ public class Game extends JPanel {
         if (enGlissade) 
         {
             int largeur = (int)(1.5*TAILLE);
-            int hauteur = (int)(2.0*TAILLE * 460.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * glissade.getWidth(this) / glissade.getHeight(this)); // proportion de l'image
             g.drawImage(glissade, centreX - largeur/2, centreY, largeur, hauteur, this);
         } 
         else if (enSaut) 
@@ -222,34 +245,18 @@ public class Game extends JPanel {
             sautSong.jouer(); // joue une fois
             sautSong.volume((float) volumeSon);
             int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * saut.getWidth(this) / saut.getHeight(this)); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
         } 
         else if (etat == Etat.GAME_OVER)
         {
             // cache le joueur pendant l'animation de défaite
         }
-        else if (allerDroite && couloir < 1)
-        {
-            
-            int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idleDroite, centreX - largeur/2 + 75, centreY, largeur, hauteur, this); //+75
-            
-        }
-        else if (allerGauche && couloir > -1)
-        {
-            
-            int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
-            g.drawImage(idleGauche, centreX - largeur/2 -75, centreY, largeur, hauteur, this); //-75
-            
-        }
         else
         {
             animationPedale();
             int largeur = TAILLE;
-            int hauteur = (int)(2.0*TAILLE * 402.0 / 724.0); // proportion de l'image
+            int hauteur = (int)(2.0*TAILLE * idle.getWidth(this) / idle.getHeight(this)); // proportion de l'image
             if (imagePedale) {
                 g.drawImage(idle2, centreX - largeur/2, centreY, largeur, hauteur, this);
             }
