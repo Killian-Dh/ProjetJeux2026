@@ -275,36 +275,6 @@ private void changerVoie(){
     }
     }
 
-       /* private void dessinerGameOver(Graphics g) {
-        int x = positionJoueurX;
-        int y = JOUEUR_Y + TAILLE / 2;
-
-        int numeroImage = imagesDepuisExplosion / 4;  // change d'image toutes les 4 images du jeu
-        if (numeroImage < explosion.length) {
-            int taille = 250;
-            int solJoueur = JOUEUR_Y + 120;  // les roues du cycliste
-            // posée au sol : le bas de l'image est au niveau des roues
-            g.drawImage(explosion[numeroImage], x - taille / 2, solJoueur - taille, taille, taille, this); 
-            }else {
-            // Voile noir transparent sur tout l'écran
-            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
-            g.fillRect(0, 0, LARGEUR, HAUTEUR);
-
-            // "GAME OVER" centré
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 60));
-            FontMetrics fm = g.getFontMetrics();
-            String texte = "GAME OVER";
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
-
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.PLAIN, 22));
-            fm = g.getFontMetrics();
-            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
-
-        }
-    }*/
 
         private void dessinerGameOver(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;   // version "améliorée" de Graphics, qui sait faire tourner

@@ -1,10 +1,6 @@
 package jumpingthomas;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionListener;
-import java.awt.Image;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -14,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.JFrame;
 
 import java.awt.*;
 
@@ -40,7 +37,7 @@ public class MenuPrincipal extends JPanel {
         add(Box.createVerticalStrut(200));
         add(creerBouton("Lancer une partie", e -> lancerPartie.run()));
         add(Box.createVerticalStrut(20));
-        add(creerBouton("Paramètres", e -> bientot()));
+        add(creerBouton("Paramètres", e -> DispParametres()));
         add(Box.createVerticalStrut(20));
         add(creerBouton("Personnalisation", e -> bientot()));
         add(Box.createVerticalStrut(20));
@@ -71,6 +68,19 @@ public class MenuPrincipal extends JPanel {
     private void bientot() {
         JOptionPane.showMessageDialog(this, "Bientôt disponible !");
     }
+
+    private void DispParametres()
+    {
+        JFrame parametresFenetre = new JFrame("Paramètres");
+        parametresFenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        parametresFenetre.setSize(300, 200);
+        
+        parametresFenetre.setLocationRelativeTo(null);
+        parametresFenetre.setVisible(true);
+
+        
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
