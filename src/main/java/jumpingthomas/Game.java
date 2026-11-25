@@ -24,6 +24,17 @@ public class Game extends JPanel {
     public static final int HORIZON = HAUTEUR / 3;
     public static final int TAILLE = 110;
 
+    // exemple d'appel pour le son : 
+    // musique.volume(0.3f); // 30 %
+    // musique.boucle();     // boucle indéfiniment
+    // saut.jouer(); // joue une fois
+    // musique.stop(); // stoppe la lecture
+
+    private Son musiqueFond = new Son("OIIAOIIA_Theme.wav");
+    private Son explosionSong = new Son("explosionSong.wav");
+    private Son mortSong = new Son("LegoBreak.wav");
+    private Son sautSong = new Son("WhooshSound.wav");
+
     public static final int JOUEUR_Y = HAUTEUR - 200;
     //Sprite du joueur
     private Image idle = new ImageIcon("cycliste_idle.png").getImage();
@@ -126,6 +137,8 @@ public class Game extends JPanel {
         if (generateur.toucheJoueur(couloir, enSaut, enGlissade)) {
             etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
+            musiqueFond.stop();
+            explosionSong.jouer(); // joue une fois
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
             }
@@ -160,6 +173,7 @@ public class Game extends JPanel {
         } 
         else if (enSaut) 
         {
+            sautSong.jouer(); // joue une fois
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * 424.0 / 724.0); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
@@ -216,6 +230,7 @@ public void sauter() {
 
     if (!enSaut) {
         enSaut = true;
+        
         hauteurSaut = -80;
 
         Timer timerSaut = new Timer((int)(tempsSaut), e -> {
@@ -226,6 +241,7 @@ public void sauter() {
 
         timerSaut.setRepeats(false);
         timerSaut.start();
+        
     }
     
 }
@@ -234,6 +250,7 @@ private void changerVoie(){
         {
             couloir -= 1;
             allerGauche = false;
+            
         }
         if (couloir < 1 && allerDroite == true)
         {
@@ -311,6 +328,7 @@ private void changerVoie(){
             int cy = (int) (JOUEUR_Y + 60 + (impactY - JOUEUR_Y - 60) * e);
             double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
             dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
+            mortSong.jouer(); // joue une fois
             return;
         }
         // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
@@ -397,12 +415,14 @@ private void changerVoie(){
         route.reinitialiser();   // remet la route à zéro (Thomas)
         etat = Etat.JEU;
         afficherBoutons(false);
+        musiqueFond.boucle();
     }
 
     // Bouton "Menu" du game over
     private void allerAuMenu() {
         etat = Etat.MENU;
         afficherBoutons(false);
+        
         retourMenu.run();   // Main s'occupe de montrer la carte du menu
     }
 
