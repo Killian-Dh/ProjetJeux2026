@@ -199,10 +199,10 @@ public class Game extends JPanel {
             glissade = new ImageIcon("cycliste_glissade.png").getImage();
             break;
         case 1 : 
-            idle = new ImageIcon("cycliste_idle.png").getImage();
-            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
-            saut = new ImageIcon("cycliste_saute.png").getImage();
-            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            idle = new ImageIcon("harley_idle.png").getImage();
+            idle2 = new ImageIcon("harley_idle2.png").getImage();
+            saut = new ImageIcon("harley_saut.png").getImage();
+            glissade = new ImageIcon("harley_glissade.png").getImage();
             break;
         case 2 :
             idle = new ImageIcon("cycliste_idle.png").getImage();
