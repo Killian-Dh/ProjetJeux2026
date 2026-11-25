@@ -39,18 +39,28 @@ public class Game extends JPanel {
 
     public static final int JOUEUR_Y = HAUTEUR - 200;
     //Sprite du joueur
-    private Image idle = new ImageIcon("cycliste_idle.png").getImage();
-    private Image idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+    /*private Image idle = new ImageIcon("cycliste_idle.png").getImage();
+    private Image idle2 = new ImageIcon("cycliste_idle2.png").getImage();*/
+
+    private Image idle;
+    private Image idle2;
+    private Image saut;
+    private Image glissade;
+
+    
+
     private boolean imagePedale = false;
     private static int vitessePedale = 500;
-    private Image saut = new ImageIcon("cycliste_saute.png").getImage();
-    private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();
+    /*private Image saut = new ImageIcon("cycliste_saute.png").getImage();
+    private Image glissade = new ImageIcon("cycliste_glissade.png").getImage();*/
     private Image idleDroite = new ImageIcon("cycliste_droite.png").getImage();
     private Image idleGauche = new ImageIcon("cycliste_gauche.png").getImage();
     private Image mort = new ImageIcon("cycliste_death.png").getImage();
     private Image cyclisteVol = new ImageIcon("cycliste_vol.png").getImage();
     private Image cyclisteEcrase = new ImageIcon("cycliste_ecrase.png").getImage();
     private Image vitreFissuree = new ImageIcon("vitre_fissuree.png").getImage();
+
+
 
     private static int dureeVol = 30;
     private static int dureeEcrase = 35;
@@ -104,6 +114,38 @@ public class Game extends JPanel {
     add(boutonRejouer);
     add(boutonMenu);
     afficherBoutons(false);
+
+    
+    /*if (MenuPrincipal.selectedType == 1)
+    {
+
+    }*/
+
+    // ou 
+
+    /*int styleSelectionne = MenuPrincipal.selectedType;
+    switch (styleSelectionne)
+    {
+        case 0 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 1 : 
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+        case 2 :
+            idle = new ImageIcon("cycliste_idle.png").getImage();
+            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
+            saut = new ImageIcon("cycliste_saute.png").getImage();
+            glissade = new ImageIcon("cycliste_glissade.png").getImage();
+            break;
+     }*/
+
 
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
@@ -176,6 +218,7 @@ public class Game extends JPanel {
         } 
         else if (enSaut) 
         {
+            
             sautSong.jouer(); // joue une fois
             sautSong.volume((float) volumeSon);
             int largeur = TAILLE;

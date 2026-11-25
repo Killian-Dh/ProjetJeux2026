@@ -26,7 +26,11 @@ public class MenuPrincipal extends JPanel {
 
     private static ImageIcon dispBouton = new ImageIcon("ButtonType.png");
     private static ImageIcon dispBoutonCroix = new ImageIcon("Croix.png");
-    private JButton boutonCroix;
+    
+    private JButton boutonCroixPerso;
+    private JLabel titrePersonalisation;
+    
+    private JButton boutonCroixParam;
     private JLabel texteVolSon;
     private JLabel texteVolMusique;
     private JLabel titreParametre;
@@ -36,6 +40,9 @@ public class MenuPrincipal extends JPanel {
     private static Image fond = new ImageIcon("fondMenu.png").getImage();
     private static Image FondParametres = new ImageIcon("PageParametre.png").getImage();
     private static boolean afficherParametres = false;
+    private static boolean afficherPersonalisation = false;
+
+    public static int selectedType = 0; //Style séelectionné
 
     
 
@@ -75,7 +82,7 @@ public class MenuPrincipal extends JPanel {
         boutonParametres.setBounds(boutonX, 430, boutonLarg, boutonHaut);
         add(boutonParametres);
 
-        JButton boutonPerso = creerBouton("Personnalisation", e -> bientot());
+        JButton boutonPerso = creerBouton("Personnalisation", e -> DispPersonalisation());
         boutonPerso.setBounds(boutonX, 510, boutonLarg, boutonHaut);
         add(boutonPerso);
 
@@ -84,6 +91,7 @@ public class MenuPrincipal extends JPanel {
         add(boutonQuitter);
 
         Parametres();
+        Personnalisation();
  
         
     }
@@ -114,34 +122,66 @@ public class MenuPrincipal extends JPanel {
         JOptionPane.showMessageDialog(this, "Bientôt disponible !");
     }
 
+    private void DispPersonalisation()
+    {
+        afficherPersonalisation = !afficherPersonalisation; // clic = afficher / masquer
+        for (Component c : getComponents()) {
+        c.setVisible(!afficherPersonalisation);
+        }
+        boutonCroixPerso.setVisible(afficherPersonalisation);
 
-    
+        repaint();
+    }
+
+    private void Personnalisation()
+    {
+        boutonCroixPerso();
+        textPersonalisation();
+    }
+
+    private void textPersonalisation()
+    {
+        titrePersonalisation = new JLabel("PERSONALISATION");
+        titrePersonalisation.setFont(new Font("Arial", Font.BOLD, 30));
+        titrePersonalisation.setForeground(Color.BLACK);
+        titrePersonalisation.setBounds(Game.LARGEUR/2 -110, 350, 300, 30);
+        titrePersonalisation.setVisible(false);
+        add(titrePersonalisation);
+    }
+
+    private void boutonCroixPerso()
+    {
+        boutonCroixPerso = new JButton(dispBoutonCroix);
+        boutonCroixPerso.setFocusable(false);
+        boutonCroixPerso.setContentAreaFilled(false);
+        boutonCroixPerso.setBorderPainted(false);
+        boutonCroixPerso.addActionListener(e -> DispPersonalisation());
+        boutonCroixPerso.setBounds(330, 620, 35, 35);
+        boutonCroixPerso.setVisible(false);
+        add(boutonCroixPerso);
+    }
+
+
     private void DispParametres()
     {
-        
         afficherParametres = !afficherParametres; // clic = afficher / masquer
         for (Component c : getComponents()) {
         c.setVisible(!afficherParametres);
         }
-        boutonCroix.setVisible(afficherParametres);
+        boutonCroixParam.setVisible(afficherParametres);
         texteVolMusique.setVisible(afficherParametres);
         texteVolSon.setVisible(afficherParametres);
         titreParametre.setVisible(afficherParametres);
         sliderSon.setVisible(afficherParametres);
         sliderMusique.setVisible(afficherParametres);
 
-        
-
-        /*JPanel sliderMusique = SliderParametres(Game.volumeMusique, v -> Game.volumeMusique = v);
-        sliderMusique.setBounds(50, 100, 300, 50);*/
-        
         repaint();
     }
+
     private void Parametres()
     {
-
         textParametres();
-        boutonCroix();
+        boutonCroixParam();
         
         sliderSon = SliderParametres(Game.volumeSon, v -> Game.volumeSon = v);
         sliderSon.setBounds(75, 430, 280,80);
@@ -152,11 +192,8 @@ public class MenuPrincipal extends JPanel {
         sliderMusique.setBounds(75, 505, 280,80);
         sliderMusique.setVisible(false);
         add(sliderMusique);
-
-
-
-
     }
+
 
     private void textParametres()
     {
@@ -181,16 +218,16 @@ public class MenuPrincipal extends JPanel {
         titreParametre.setVisible(false);
         add(titreParametre);
     }
-    private void boutonCroix()
+    private void boutonCroixParam()
     {
-        boutonCroix = new JButton(dispBoutonCroix);
-        boutonCroix.setFocusable(false);
-        boutonCroix.setContentAreaFilled(false);
-        boutonCroix.setBorderPainted(false);
-        boutonCroix.addActionListener(e -> DispParametres());
-        boutonCroix.setBounds(330, 620, 35, 35);
-        boutonCroix.setVisible(false);
-        add(boutonCroix);
+        boutonCroixParam = new JButton(dispBoutonCroix);
+        boutonCroixParam.setFocusable(false);
+        boutonCroixParam.setContentAreaFilled(false);
+        boutonCroixParam.setBorderPainted(false);
+        boutonCroixParam.addActionListener(e -> DispParametres());
+        boutonCroixParam.setBounds(330, 620, 35, 35);
+        boutonCroixParam.setVisible(false);
+        add(boutonCroixParam);
     }
 
     private JPanel SliderParametres(double valeurInitiale, Consumer<Double> onChange)
@@ -219,6 +256,11 @@ public class MenuPrincipal extends JPanel {
         if (fond != null) {
             g.drawImage(fond, 0, 0, Game.LARGEUR, Game.HAUTEUR, this);
             if (afficherParametres) {
+                int imageLarg = FondParametres.getWidth(this);
+                g.drawImage(FondParametres, (Game.LARGEUR - imageLarg)/2, 325, 325, 350, this);
+                
+            }
+            if (afficherPersonalisation) {
                 int imageLarg = FondParametres.getWidth(this);
                 g.drawImage(FondParametres, (Game.LARGEUR - imageLarg)/2, 325, 325, 350, this);
                 
