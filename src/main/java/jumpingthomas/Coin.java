@@ -86,6 +86,7 @@ public class Coin {
 
         if (memeCouloir && franchitLeJoueur && !collectee) {
             collectee = true;
+            
             return true;
         }
 

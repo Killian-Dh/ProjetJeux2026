@@ -14,6 +14,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -96,6 +97,13 @@ public class Game extends JPanel {
     private double score = 0;        // double pour garder les petits morceaux, affiché en int
     private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
 
+    public static int totalPieces = 0;
+    private static int prevtotalPieces = 0;
+    
+    
+
+
+
     // Boutons de l'écran game over
     private JButton boutonRejouer;
     private JButton boutonMenu;
@@ -116,6 +124,8 @@ public class Game extends JPanel {
     add(boutonRejouer);
     add(boutonMenu);
     afficherBoutons(false);
+
+    
 
     
     /*if (MenuPrincipal.selectedType == 1)
@@ -152,7 +162,10 @@ public class Game extends JPanel {
     setFocusable(true);
         Timer timer = new Timer(16, e -> 
     {
+        
         if (etat == Etat.MENU) {
+            
+            
             return;                    // on est sur le menu : le jeu ne tourne pas
         }
 
@@ -188,6 +201,7 @@ public class Game extends JPanel {
             musiqueFond.stop();
             explosionSong.jouer(); // joue une fois
             explosionSong.volume((float) volumeSon);
+            totalPieces += generateurPieces.getNombrePiecesCollectees(); 
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
             }
@@ -215,6 +229,7 @@ public class Game extends JPanel {
             glissade = new ImageIcon("cycliste_glissade.png").getImage();
             break;
      }
+     
 
         repaint();
     });
@@ -233,6 +248,7 @@ public class Game extends JPanel {
         generateur.dessinerDerriere(g);
         generateurPieces.dessiner(g);
 
+       
         g.setColor(Color.RED);
         int centreX = positionJoueurX;
         int centreY = JOUEUR_Y;
@@ -431,6 +447,7 @@ private void changerVoie(){
         g.setFont(new Font("Arial", Font.BOLD, 20));
 
         String textePieces = "Pieces : " + generateurPieces.getNombrePiecesCollectees();
+        //String textePieces = "Pieces : " + totalPieces;
 
         g.setColor(Color.BLACK);
         g.drawString(textePieces, 22, 80);

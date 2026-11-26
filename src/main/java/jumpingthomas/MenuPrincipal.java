@@ -49,8 +49,12 @@ public class MenuPrincipal extends JPanel {
     private static Image FondParametres = new ImageIcon("PageParametre.png").getImage();
     private static boolean afficherParametres = false;
     private static boolean afficherPersonalisation = false;
+    private static String nbpiece = "";
+    private JLabel etiquette;
+    private static Image logoPiece = new ImageIcon("piece.png").getImage();
 
     public static int selectedType = 0; //Style séelectionné
+    
 
     
 
@@ -58,6 +62,8 @@ public class MenuPrincipal extends JPanel {
         setPreferredSize(new Dimension(Game.LARGEUR, Game.HAUTEUR));
         setBackground(new Color(30, 30, 60));                // fond bleu nuit (brouillon)
         
+        
+
         /*setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));    // les éléments s'empilent de haut en bas
 
         //JLabel titre = new JLabel("JUMPING THOMAS");
@@ -133,6 +139,7 @@ public class MenuPrincipal extends JPanel {
     private void DispPersonalisation()
     {
         afficherPersonalisation = !afficherPersonalisation; // clic = afficher / masquer
+        
         for (Component c : getComponents()) {
         c.setVisible(!afficherPersonalisation);
         }
@@ -140,6 +147,7 @@ public class MenuPrincipal extends JPanel {
         boutonPlus.setVisible(afficherPersonalisation);
         boutonMoins.setVisible(afficherPersonalisation);
         titrePersonalisation.setVisible(afficherPersonalisation);
+        
 
         repaint();
     }
@@ -159,12 +167,7 @@ public class MenuPrincipal extends JPanel {
         titrePersonalisation.setVisible(false);
         add(titrePersonalisation);
 
-        titrePersonalisation = new JLabel(":");
-        titrePersonalisation.setFont(new Font("Arial", Font.BOLD, 27));
-        titrePersonalisation.setForeground(Color.BLACK);
-        titrePersonalisation.setBounds(Game.LARGEUR/2 -130, 350, 300, 30);
-        titrePersonalisation.setVisible(false);
-        add(titrePersonalisation);
+        
     }
 
     private void boutonsPerso()
@@ -311,6 +314,20 @@ public class MenuPrincipal extends JPanel {
                 g.drawImage(FondParametres, (Game.LARGEUR - imageLarg)/2, 325, 325, 350, this);
                 
             }
+
+            if (!afficherParametres) 
+            {
+                int pieceLarg = logoPiece.getWidth(this);
+                g.setColor(new Color(150, 30, 30));
+                g.fillRoundRect(Game.LARGEUR - 90, 20, 80, 43, 10, 10);
+                g.setColor(new Color(196, 202, 220));
+                g.fillRoundRect(Game.LARGEUR - 93, 20, 80, 40, 10, 10);
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Arial", Font.BOLD, 28));
+                g.drawString(String.valueOf(Game.totalPieces), Game.LARGEUR - 40,50);   // x, y
+                g.drawImage(logoPiece, Game.LARGEUR - 85, 25, 30, 30, this);
+            }
+
             if (afficherPersonalisation) {
                 int fondLarg = FondParametres.getWidth(this);
                 int casesLarg = cases.getWidth(this);
