@@ -1,6 +1,7 @@
 
 package jumpingthomas;
-
+import java.util.Collections;
+import java.util.List;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,39 +17,42 @@ public class GenerateurPieces {
     private int nombrePiecesCollectees = 0;
 
     // Mise à jour des pièces à chaque image
-    public void mettreAJour(double vitesse, int couloirJoueur) {
+    public void mettreAJour(double vitesse, int couloirJoueur, GenerateurObstacles obstacles) {
 
-        // Faire avancer toutes les pièces
-        for (Coin piece : pieces) {
-            piece.avancer(vitesse);
-
-            // Vérifier si le joueur récupère une pièce
-            if (piece.toucher(couloirJoueur)) {
-                nombrePiecesCollectees++;
-            }
-        }
-
-        // Supprimer les pièces collectées ou dépassées
-        pieces.removeIf(piece ->
-            piece.estCollectee() || piece.getDistance() < -5
-        );
-
-        // Créer de nouvelles pièces
-        avantProchainePiece -= vitesse;
-
-        if (avantProchainePiece <= 0) {
-            creerPiece();
-            avantProchainePiece = 12 + hasard.nextInt(9);
+    for (Coin piece : pieces) {
+        piece.avancer(vitesse);
+        if (piece.toucher(couloirJoueur)) {
+            nombrePiecesCollectees++;
         }
     }
+
+    pieces.removeIf(piece -> piece.estCollectee() || piece.getDistance() < -5);
+
+    // supprime les pièces qu'une nouvelle vague vient de recouvrir
+    pieces.removeIf(piece ->
+        piece.getDistance() > Coin.distanceDepart - 20
+        && obstacles.obstacleProche(piece.getCouloir(), piece.getDistance(), 15)
+    );
+
+    avantProchainePiece -= vitesse;
+    if (avantProchainePiece <= 0) {
+        creerPiece(obstacles);
+        avantProchainePiece = 12 + hasard.nextInt(9);
+    }
+}
 
     // Créer une pièce dans un couloir aléatoire
-    private void creerPiece() {
+    private void creerPiece(GenerateurObstacles obstacles) {
+    List<Integer> couloirs = new ArrayList<>(List.of(-1, 0, 1));
+    Collections.shuffle(couloirs, hasard);
 
-        int couloir = hasard.nextInt(3) - 1;
-
-        pieces.add(new Coin(couloir));
+    for (int couloir : couloirs) {
+        if (!obstacles.obstacleProche(couloir, Coin.distanceDepart, 15)) {
+            pieces.add(new Coin(couloir));
+            return;
+        }
     }
+}
 
     // Dessiner toutes les pièces
     public void dessiner(Graphics g) {
@@ -70,4 +74,6 @@ public class GenerateurPieces {
         nombrePiecesCollectees = 0;
         avantProchainePiece = 0;
     }
+
+    
 }

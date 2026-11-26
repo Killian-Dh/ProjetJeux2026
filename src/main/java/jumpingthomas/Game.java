@@ -171,7 +171,8 @@ public class Game extends JPanel {
         
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
-        generateurPieces.mettreAJour(vitesse, couloir);
+                                          // d'abord les obstacles
+        generateurPieces.mettreAJour(vitesse, couloir, generateur);  // puis les pièces
         route.mettreAJour(vitesse);          // fait défiler la route (Thomas)
         tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
         if (tempsSaut > 700) {

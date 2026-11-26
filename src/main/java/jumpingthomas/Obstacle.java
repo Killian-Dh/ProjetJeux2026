@@ -119,4 +119,8 @@ public class Obstacle {
             return new Image[0];   // tableau vide : on dessinera la banderole à la place
         }
     }
+    public int getCouloir() 
+    {
+        return couloir;
+    }
 }

@@ -102,4 +102,15 @@ public class GenerateurObstacles {
         }
         return false;          // on a tout parcouru, aucun ne touche
     }
+
+    public boolean obstacleProche(int couloir, double distance, double marge) {
+        for (Obstacle o : obstacles) {
+            if (o.getCouloir() == couloir && Math.abs(o.getDistance() - distance) < marge) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
 }

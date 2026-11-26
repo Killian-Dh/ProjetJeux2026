@@ -10,12 +10,16 @@ public class Coin {
     private double distance;
     private double distancePrecedente;
 
+    public static double distanceDepart = 100;
+
+    public int getCouloir() { return couloir; }
+
     private boolean collectee;
 
     public Coin(int couloir) {
         this.couloir = couloir;
-        this.distance = 100;
-        this.distancePrecedente = 100;
+        this.distance = distanceDepart;
+        this.distancePrecedente = distanceDepart;
         this.collectee = false;
     }
 
