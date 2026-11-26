@@ -36,6 +36,8 @@ public class Game extends JPanel {
     private Son mortSon = new Son("LegoBreak.wav");
     private Son sautSon = new Son("WhooshSound.wav");
     private Son pieceSon = new Son("pieceSon.wav");
+    private static Image logoPiece = new ImageIcon("piece.png").getImage();
+    private static Image logoScore = new ImageIcon("etoile.png").getImage();
     public static double volumeSon = 0.3; // volume sonore par défaut (0 à 1)
     public static double volumeMusique = 0.3; // volume musique par défaut (0 à 1)
 
@@ -421,30 +423,81 @@ private void changerVoie(){
 
         // Score en haut à droite (brouillon, à embellir plus tard)
         private void dessinerScore(Graphics g) {
+            int largeurRScore = 35;
+            int longueurScore = 80;
+            int offsetX1Score = 90;
+            int offsetX2Score = 93;
+            int offsetlogoScore = 115;
+            if (score >= 1000 && score < 10000)
+            {
+                longueurScore = 105;
+                offsetX1Score = 115;
+                offsetX2Score = 118;
+                offsetlogoScore = 125;
+            }
+            else if (score < 1000)
+            {
+                longueurScore = 95;
+                offsetX1Score = 105;
+                offsetX2Score = 108;
+                offsetlogoScore = 110;
+            }
+            
+            g.setColor(new Color(150, 30, 30));
+            g.fillRoundRect(Game.LARGEUR - offsetX1Score, 19, longueurScore, largeurRScore, 10, 10);
+            g.setColor(new Color(196, 202, 220));
+            g.fillRoundRect(Game.LARGEUR - offsetX2Score, 14, longueurScore, largeurRScore, 10, 10);
             g.setFont(new Font("Arial", Font.BOLD, 28));
+            g.drawImage(logoScore, Game.LARGEUR - offsetlogoScore, 12, 36, 40, this); // remplacer par logoScore
 
-        // Score en haut à droite
-        String texteScore = "Score : " + (int) score;
-        int largeurScore = g.getFontMetrics().stringWidth(texteScore);
-        int xScore = LARGEUR - largeurScore - 20;
+            // Score en haut à droite
+            String texteScore = Integer.toString((int)score);
+            int largeurScore = g.getFontMetrics().stringWidth(texteScore);
+            int xScore = LARGEUR - largeurScore - 20;
 
-        g.setColor(Color.BLACK);
-        g.drawString(texteScore, xScore + 2, 42);
+            g.setColor(Color.BLACK);
+            g.drawString(texteScore, xScore + 2, 42);
 
-        g.setColor(Color.WHITE);
-        g.drawString(texteScore, xScore, 40);
+            g.setColor(Color.WHITE);
+            g.drawString(texteScore, xScore, 40);
 
-        // Pieces collectees en haut a gauche, sur une ligne distincte
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+            // Pieces collectees en haut a gauche, sur une ligne distincte
+            int largeurRPiece = 35;
+            int longueurPiece = 80;
+            int offsetX1Piece = 90;
+            int offsetX2Piece = 93;
+            int offsetlogoPiece = 110;
+            if (generateurPieces.getNombrePiecesCollectees() >= 1000 && generateurPieces.getNombrePiecesCollectees() < 10000)
+            {
+                longueurPiece = 105;
+                offsetX1Piece = 115;
+                offsetX2Piece = 118;
+                offsetlogoPiece = 120;
+            }
+            else if (generateurPieces.getNombrePiecesCollectees() < 1000)
+            {
+                longueurPiece = 95;
+                offsetX1Piece = 105;
+                offsetX2Piece = 108;
+                offsetlogoPiece = 105;
+            }
+            
+            g.setColor(new Color(150, 30, 30));
+            g.fillRoundRect(Game.LARGEUR - offsetX1Piece, 65, longueurPiece, largeurRPiece, 10, 10);
+            g.setColor(new Color(196, 202, 220));
+            g.fillRoundRect(Game.LARGEUR - offsetX2Piece, 60, longueurPiece, largeurRPiece, 10, 10);
+            g.setFont(new Font("Arial", Font.BOLD, 28));
+            g.drawImage(logoPiece, Game.LARGEUR - offsetlogoPiece, 62, 30, 30, this);
+            String textePieces = Integer.toString(generateurPieces.getNombrePiecesCollectees());
+            int largeurScorePiece = g.getFontMetrics().stringWidth(textePieces);
+            int xScorePiece = LARGEUR - largeurScorePiece - 20;
+            
 
-        String textePieces = "Pieces : " + generateurPieces.getNombrePiecesCollectees();
-        //String textePieces = "Pieces : " + totalPieces;
+            g.setColor(Color.BLACK);
+            g.drawString(textePieces, xScorePiece + 2, 88);
 
-        g.setColor(Color.BLACK);
-        g.drawString(textePieces, 22, 80);
-
-        g.setColor(Color.YELLOW);
-        g.drawString(textePieces, 20, 78);
+            g.setColor(Color.YELLOW);
+            g.drawString(textePieces, xScorePiece, 86);
     }
     /*private void dessinerScore(Graphics g) {
         g.setFont(new Font("Arial", Font.BOLD, 28));
