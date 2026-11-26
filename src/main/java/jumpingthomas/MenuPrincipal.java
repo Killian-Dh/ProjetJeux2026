@@ -24,6 +24,7 @@ import java.awt.*;
 
 public class MenuPrincipal extends JPanel {
 
+    public static Son musique = new Son("ThemeMenu.wav");
     private static ImageIcon dispBouton = new ImageIcon("ButtonType.png");
     private static ImageIcon dispBoutonCroix = new ImageIcon("Croix.png");
     
@@ -264,7 +265,10 @@ public class MenuPrincipal extends JPanel {
         sliderSon.setVisible(false);
         add(sliderSon);
 
-        sliderMusique = SliderParametres(Game.volumeMusique, v -> Game.volumeMusique = v);
+        sliderMusique = SliderParametres(Game.volumeMusique, v -> {
+            Game.volumeMusique = v;
+            musique.volume(v.floatValue());  
+        });
         sliderMusique.setBounds(80, 475, 280,80);
         sliderMusique.setVisible(false);
         add(sliderMusique);
