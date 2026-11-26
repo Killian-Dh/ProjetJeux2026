@@ -417,8 +417,8 @@ private void changerVoie(){
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
 
-        texteContour(g, "GAME", LARGEUR / 2, 125, PIXEL.deriveFont(52f), new Color(255, 84, 84));
-        texteContour(g, "OVER", LARGEUR / 2, 190, PIXEL.deriveFont(52f), new Color(255, 84, 84));
+        texteContour(g, "GAME", LARGEUR / 2, 115, PIXEL.deriveFont(52f), new Color(255, 84, 84));
+        texteContour(g, "OVER", LARGEUR / 2, 180, PIXEL.deriveFont(52f), new Color(255, 84, 84));
 
 
         int px = 45, py = 225, pw = 360, ph = 245;
@@ -452,19 +452,18 @@ private void changerVoie(){
         g.setColor(new Color(200, 130, 0));
         g.drawString(pieces, px + pw - 34 - fm.stringWidth(pieces), py + 212);
 
-
         if (nouveauRecord) {
-            int cx = px + pw - 75, cy = py - 2;              
+            int cx = px + pw - 90, cy = py - 14;            
             Graphics2D b = (Graphics2D) g.create();         
             b.rotate(Math.toRadians(-8), cx, cy);
             b.setColor(SOMBRE);
-            b.fillRect(cx - 92, cy - 17, 184, 34);
+            b.fillRect(cx - 122, cy - 22, 244, 44);
             b.setColor(new Color(255, 212, 60));
-            b.fillRect(cx - 88, cy - 13, 176, 26);
-            b.setFont(PIXEL.deriveFont(11f));
+            b.fillRect(cx - 118, cy - 18, 236, 36);
+            b.setFont(PIXEL.deriveFont(15f));
             b.setColor(SOMBRE);
             String texte = "NOUVEAU RECORD!";
-            b.drawString(texte, cx - b.getFontMetrics().stringWidth(texte) / 2, cy + 6);
+            b.drawString(texte, cx - b.getFontMetrics().stringWidth(texte) / 2, cy + 8);
             b.dispose();
         }
 
