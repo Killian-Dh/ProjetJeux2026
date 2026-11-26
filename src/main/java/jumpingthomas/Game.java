@@ -32,9 +32,10 @@ public class Game extends JPanel {
     // musique.stop(); // stoppe la lecture
 
     private Son musiqueFond = new Son("OIIAOIIA_Theme.wav");
-    private Son explosionSong = new Son("explosionSong.wav");
-    private Son mortSong = new Son("LegoBreak.wav");
-    private Son sautSong = new Son("WhooshSound.wav");
+    private Son explosionSon = new Son("explosionSong.wav");
+    private Son mortSon = new Son("LegoBreak.wav");
+    private Son sautSon = new Son("WhooshSound.wav");
+    private Son pieceSon = new Son("pieceSon.wav");
     public static double volumeSon = 0.3; // volume sonore par défaut (0 à 1)
     public static double volumeMusique = 0.3; // volume musique par défaut (0 à 1)
 
@@ -99,6 +100,8 @@ public class Game extends JPanel {
 
     public static int totalPieces = 0;
     private static int prevtotalPieces = 0;
+   
+
     
     
 
@@ -125,38 +128,6 @@ public class Game extends JPanel {
     add(boutonMenu);
     afficherBoutons(false);
 
-    
-
-    
-    /*if (MenuPrincipal.selectedType == 1)
-    {
-
-    }*/
-
-    // ou 
-
-    /*int styleSelectionne = MenuPrincipal.selectedType;
-    switch (styleSelectionne)
-    {
-        case 0 : 
-            idle = new ImageIcon("cycliste_idle.png").getImage();
-            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
-            saut = new ImageIcon("cycliste_saute.png").getImage();
-            glissade = new ImageIcon("cycliste_glissade.png").getImage();
-            break;
-        case 1 : 
-            idle = new ImageIcon("cycliste_idle.png").getImage();
-            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
-            saut = new ImageIcon("cycliste_saute.png").getImage();
-            glissade = new ImageIcon("cycliste_glissade.png").getImage();
-            break;
-        case 2 :
-            idle = new ImageIcon("cycliste_idle.png").getImage();
-            idle2 = new ImageIcon("cycliste_idle2.png").getImage();
-            saut = new ImageIcon("cycliste_saute.png").getImage();
-            glissade = new ImageIcon("cycliste_glissade.png").getImage();
-            break;
-     }*/
 
 
     setFocusable(true);
@@ -164,10 +135,9 @@ public class Game extends JPanel {
     {
         
         if (etat == Etat.MENU) {
-            
-            
             return;                    // on est sur le menu : le jeu ne tourne pas
         }
+          
 
         if (etat == Etat.GAME_OVER) {
             imagesDepuisExplosion++;   // seule l'explosion avance
@@ -185,7 +155,22 @@ public class Game extends JPanel {
         vitesse = vitesse + 0.0005;          // accélère un peu à chaque image
         generateur.mettreAJour(vitesse);     // fait avancer / crée / supprime les obstacles
                                           // d'abord les obstacles
+        int avant = generateurPieces.getNombrePiecesCollectees();
         generateurPieces.mettreAJour(vitesse, couloir, generateur);  // puis les pièces
+        
+        
+        int apres = generateurPieces.getNombrePiecesCollectees();
+
+        
+        /*if (apres > avant) {
+            pieceSon.volume((float) volumeSon);
+            pieceSon.jouer();
+        }*/
+        if (apres > avant) 
+        {
+            jouerSonPiece();
+        }
+
         route.mettreAJour(vitesse);          // fait défiler la route (Thomas)
         tempsSaut = Math.max(tempsSautMin, tempsSaut/vitesse); // le saut devient plus rapide au fil de la partie
         if (tempsSaut > 700) {
@@ -199,9 +184,17 @@ public class Game extends JPanel {
             etat = Etat.GAME_OVER;
             imagesDepuisExplosion = 0;
             musiqueFond.stop();
-            explosionSong.jouer(); // joue une fois
-            explosionSong.volume((float) volumeSon);
-            totalPieces += generateurPieces.getNombrePiecesCollectees(); 
+            explosionSon.volume((float) volumeSon);
+            explosionSon.jouer(); // joue une fois
+            if (totalPieces < 100)
+            {
+                totalPieces += generateurPieces.getNombrePiecesCollectees(); 
+            }
+            else
+            {
+                totalPieces = 999;
+            }
+            
             if ((int) score > meilleurScore) {
                 meilleurScore = (int) score;   // nouveau record !
             }
@@ -261,9 +254,6 @@ public class Game extends JPanel {
         } 
         else if (enSaut) 
         {
-            
-            sautSong.jouer(); // joue une fois
-            sautSong.volume((float) volumeSon);
             int largeur = TAILLE;
             int hauteur = (int)(2.0*TAILLE * saut.getWidth(this) / saut.getHeight(this)); // proportion de l'image
             g.drawImage(saut, centreX - largeur/2, centreY + hauteurSaut, largeur, hauteur, this);
@@ -372,8 +362,9 @@ private void changerVoie(){
             int cy = (int) (JOUEUR_Y + 60 + (impactY - JOUEUR_Y - 60) * e);
             double angle = p * 4 * Math.PI;      // 2 tours complets (2 x 2π) : il arrive bien droit
             dessinerImage(g2, cyclisteVol, cx, cy, taille, angle);
-            mortSong.jouer(); // joue une fois
-            mortSong.volume((float) volumeSon);
+            mortSon.volume((float) volumeSon);
+            mortSon.jouer(); // joue une fois
+            
             return;
         }
         // PHASE 2 et 3 : il est collé à la vitre, puis glisse vers le bas
@@ -553,4 +544,18 @@ private void changerVoie(){
 
         timerPedale.start();
     }
+
+    
+    private Son[] sonsPiece = {
+        new Son("pieceSon.wav"), new Son("pieceSon.wav"), new Son("pieceSon.wav")
+    };
+    private int indexSonPiece = 0;
+
+    private void jouerSonPiece() {
+        Son s = sonsPiece[indexSonPiece];
+        s.volume((float) volumeSon);
+        s.jouer();
+        indexSonPiece = (indexSonPiece + 1) % sonsPiece.length;
+    }
+
     }

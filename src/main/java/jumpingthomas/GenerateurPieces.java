@@ -16,6 +16,7 @@ public class GenerateurPieces {
     // Nombre de pièces réellement collectées
     private int nombrePiecesCollectees = 0;
     public static int stockPiece = 0;
+    public boolean pieceTouchee = false;
 
     // Mise à jour des pièces à chaque image
     public void mettreAJour(double vitesse, int couloirJoueur, GenerateurObstacles obstacles) {
@@ -25,6 +26,8 @@ public class GenerateurPieces {
         if (piece.toucher(couloirJoueur)) {
             nombrePiecesCollectees++;
         }
+        
+
     }
 
     pieces.removeIf(piece -> piece.estCollectee() || piece.getDistance() < -5);
@@ -75,6 +78,10 @@ public class GenerateurPieces {
         nombrePiecesCollectees = 0;
         avantProchainePiece = 0;
     }
+
+    public ArrayList<Coin> getPieces() {
+    return pieces;
+}
 
     
 }

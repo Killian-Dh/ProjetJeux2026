@@ -24,9 +24,11 @@ public class Son
     {
         if (clip != null) 
         {
+            clip.stop();
             clip.setFramePosition(0); // Rewind to the beginning
             clip.start();
         }
+        
     }
 
     public void stop() 

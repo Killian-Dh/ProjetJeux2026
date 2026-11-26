@@ -348,8 +348,8 @@ public class MenuPrincipal extends JPanel {
                 g.setColor(new Color(196, 202, 220));
                 g.fillRoundRect(Game.LARGEUR - 93, 20, 80, 40, 10, 10);
                 g.setColor(Color.BLACK);
-                g.setFont(new Font("Arial", Font.BOLD, 28));
-                g.drawString(String.valueOf(Game.totalPieces), Game.LARGEUR - 40,50);   // x, y
+                g.setFont(new Font("Arial", Font.BOLD, 20));
+                g.drawString(String.valueOf(Game.totalPieces), Game.LARGEUR - 50,47);   // x, y
                 g.drawImage(logoPiece, Game.LARGEUR - 85, 25, 30, 30, this);
             }
 
