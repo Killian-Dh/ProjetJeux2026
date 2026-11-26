@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -99,6 +100,14 @@ public class Game extends JPanel {
     private Image[] explosion; // les images de l'animation d'explosion
     private double score = 0;        // double pour garder les petits morceaux, affiché en int
     private int meilleurScore = 0;   // record (tant que le jeu est ouvert)
+
+    private boolean nouveauRecord = false;   // vrai si la dernière partie a battu le record
+
+    private static final Font PIXEL = chargerPolice("PressStart2P-Regular.ttf");
+    private static Image logoRecord = new ImageIcon("etoile.png").getImage();
+    private static Image cadreBouton = new ImageIcon("ButtonType.png").getImage();   // le cadre des boutons, réutilisé pour le panneau
+    private static final Color SOMBRE = new Color(40, 28, 44);
+    private static final Color GRIS = new Color(120, 110, 120);
 
     public static int totalPieces = 0;
     private static int prevtotalPieces = 0;
@@ -197,7 +206,8 @@ public class Game extends JPanel {
                 totalPieces = 999;
             }
             
-            if ((int) score > meilleurScore) {
+            nouveauRecord = ((int) score > meilleurScore);
+            if (nouveauRecord) {
                 meilleurScore = (int) score;   // nouveau record !
             }
         }
@@ -393,22 +403,118 @@ private void changerVoie(){
         g.drawImage(vitreFissuree, (LARGEUR - largeurVitre) / 2 + dx, dy, largeurVitre, hauteurVitre, this);
 
         if (t >= dureeCrash) {
-            // Voile noir transparent sur tout l'écran
-            g.setColor(new Color(0, 0, 0, 150));  // le 4e nombre = la transparence (0 à 255)
-            g.fillRect(0, 0, LARGEUR, HAUTEUR);
+            dessinerRecap((Graphics2D) g);
+        }
+    }
 
-            // "GAME OVER" centré
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 60));
-            FontMetrics fm = g.getFontMetrics();
-            String texte = "GAME OVER";
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2);
+    // Écran de fin
+    private void dessinerRecap(Graphics2D g) {
+        // voile sombre sur tout l'écran
+        g.setColor(new Color(10, 5, 25, 170));
+        g.fillRect(0, 0, LARGEUR, HAUTEUR);
 
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.PLAIN, 22));
-            fm = g.getFontMetrics();
-            texte = "Score : " + (int) score + "   Record : " + meilleurScore;
-            g.drawString(texte, (LARGEUR - fm.stringWidth(texte)) / 2, HAUTEUR / 2 + 50);
+
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+
+        texteContour(g, "GAME", LARGEUR / 2, 125, PIXEL.deriveFont(52f), new Color(255, 84, 84));
+        texteContour(g, "OVER", LARGEUR / 2, 190, PIXEL.deriveFont(52f), new Color(255, 84, 84));
+
+
+        int px = 45, py = 225, pw = 360, ph = 245;
+        dessinerPanneau(g, px, py, pw, ph);
+
+
+        g.setFont(PIXEL.deriveFont(16f));
+        g.setColor(GRIS);
+        texteCentre(g, "SCORE", py + 48);
+        g.setFont(PIXEL.deriveFont(44f));
+        g.setColor(SOMBRE);
+        texteCentre(g, String.valueOf((int) score), py + 108);
+
+        g.setColor(new Color(190, 190, 190));
+        g.fillRect(px + 30, py + 128, pw - 60, 4);
+
+        g.setFont(PIXEL.deriveFont(16f));
+        FontMetrics fm = g.getFontMetrics();
+        String record = String.valueOf(meilleurScore);
+        String pieces = "+" + generateurPieces.getNombrePiecesCollectees();
+
+        g.drawImage(logoRecord, px + 32, py + 146, 28, 30, this);
+        g.setColor(GRIS);
+        g.drawString("RECORD", px + 72, py + 170);
+        g.setColor(SOMBRE);
+        g.drawString(record, px + pw - 34 - fm.stringWidth(record), py + 170);
+
+        g.drawImage(logoPiece, px + 36, py + 190, 21, 28, this);
+        g.setColor(GRIS);
+        g.drawString("PIECES", px + 72, py + 212);
+        g.setColor(new Color(200, 130, 0));
+        g.drawString(pieces, px + pw - 34 - fm.stringWidth(pieces), py + 212);
+
+
+        if (nouveauRecord) {
+            int cx = px + pw - 75, cy = py - 2;              
+            Graphics2D b = (Graphics2D) g.create();         
+            b.rotate(Math.toRadians(-8), cx, cy);
+            b.setColor(SOMBRE);
+            b.fillRect(cx - 92, cy - 17, 184, 34);
+            b.setColor(new Color(255, 212, 60));
+            b.fillRect(cx - 88, cy - 13, 176, 26);
+            b.setFont(PIXEL.deriveFont(11f));
+            b.setColor(SOMBRE);
+            String texte = "NOUVEAU RECORD!";
+            b.drawString(texte, cx - b.getFontMetrics().stringWidth(texte) / 2, cy + 6);
+            b.dispose();
+        }
+
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    }
+
+
+    private void dessinerPanneau(Graphics2D g, int x, int y, int w, int h) {
+        int iw = cadreBouton.getWidth(this);    
+        int ih = cadreBouton.getHeight(this);   
+        int c = 20;                             
+
+
+        int[] dx = {x, x + c, x + w - c, x + w};
+        int[] dy = {y, y + c, y + h - c, y + h};
+        int[] sx = {0, c, iw - c, iw};
+        int[] sy = {0, c, ih - c, ih};
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                
+                g.drawImage(cadreBouton, dx[i], dy[j], dx[i + 1], dy[j + 1],
+                                         sx[i], sy[j], sx[i + 1], sy[j + 1], this);
+            }
+        }
+    }
+
+    private void texteContour(Graphics2D g, String texte, int cx, int y, Font police, Color couleur) {
+        g.setFont(police);
+        int x = cx - g.getFontMetrics().stringWidth(texte) / 2;
+        g.setColor(SOMBRE);
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dy = -4; dy <= 6; dy++) {      // un peu plus bas que haut : ça fait l'ombre
+                g.drawString(texte, x + dx, y + dy);
+            }
+        }
+        g.setColor(couleur);
+        g.drawString(texte, x, y);
+    }
+
+    private void texteCentre(Graphics2D g, String texte, int y) {
+        g.drawString(texte, (LARGEUR - g.getFontMetrics().stringWidth(texte)) / 2, y);
+    }
+
+    // Charge une police depuis un fichier .ttf (si elle manque : Arial gras, le jeu ne plante pas)
+    private static Font chargerPolice(String fichier) {
+        try {
+            return Font.createFont(Font.TRUETYPE_FONT, new File(fichier));
+        } catch (Exception ex) {
+            System.out.println("Police introuvable : " + fichier);
+            return new Font("Arial", Font.BOLD, 12);
         }
     }
     // Dessine une image centrée sur (cx, cy), avec une largeur donnée, tournée d'un angle (en radians)
