@@ -39,6 +39,7 @@ public class MenuPrincipal extends JPanel {
     private static Image style1 = new ImageIcon("moto.png").getImage();
     
     private JButton boutonCroixParam;
+    private Image touches = new ImageIcon("touches.png").getImage();
     private JLabel texteVolSon;
     private JLabel texteVolMusique;
     private JLabel titreParametre;
@@ -237,12 +238,12 @@ public class MenuPrincipal extends JPanel {
         boutonsParam();
         
         sliderSon = SliderParametres(Game.volumeSon, v -> Game.volumeSon = v);
-        sliderSon.setBounds(75, 430, 280,80);
+        sliderSon.setBounds(80,405, 280,80);
         sliderSon.setVisible(false);
         add(sliderSon);
 
         sliderMusique = SliderParametres(Game.volumeMusique, v -> Game.volumeMusique = v);
-        sliderMusique.setBounds(75, 505, 280,80);
+        sliderMusique.setBounds(80, 475, 280,80);
         sliderMusique.setVisible(false);
         add(sliderMusique);
     }
@@ -253,14 +254,14 @@ public class MenuPrincipal extends JPanel {
         texteVolSon = new JLabel("Volume du son :");
         texteVolSon.setFont(new Font("Arial", Font.BOLD, 20));
         texteVolSon.setForeground(Color.BLACK);
-        texteVolSon.setBounds(80, 425, 200, 30);
+        texteVolSon.setBounds(85, 400, 200, 30);
         texteVolSon.setVisible(false);
         add(texteVolSon);
 
         texteVolMusique = new JLabel("Volume du musique :");
         texteVolMusique.setFont(new Font("Arial", Font.BOLD, 20));
         texteVolMusique.setForeground(Color.BLACK);
-        texteVolMusique.setBounds(80, 500, 200, 30);
+        texteVolMusique.setBounds(85, 470, 200, 30);
         texteVolMusique.setVisible(false);
         add(texteVolMusique);
 
@@ -311,7 +312,9 @@ public class MenuPrincipal extends JPanel {
             g.drawImage(fond, 0, 0, Game.LARGEUR, Game.HAUTEUR, this);
             if (afficherParametres) {
                 int imageLarg = FondParametres.getWidth(this);
+                int toucheLarg = touches.getWidth(this);
                 g.drawImage(FondParametres, (Game.LARGEUR - imageLarg)/2, 325, 325, 350, this);
+                g.drawImage(touches, (Game.LARGEUR - toucheLarg)/2-20, 520, 140, 140, this);
                 
             }
 
