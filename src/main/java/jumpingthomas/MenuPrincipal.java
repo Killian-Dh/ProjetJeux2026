@@ -46,10 +46,15 @@ public class MenuPrincipal extends JPanel {
     private JPanel sliderSon;
     private JPanel sliderMusique;
 
+    private JButton boutonLancer;
+    private JButton boutonParametres;
+    private JButton boutonPerso;
+    private JButton boutonQuitter;
+
     private static Image fond = new ImageIcon("fondMenu.png").getImage();
     private static Image FondParametres = new ImageIcon("PageParametre.png").getImage();
-    private static boolean afficherParametres = false;
-    private static boolean afficherPersonalisation = false;
+    private boolean afficherParametres = false;
+    private boolean afficherPersonalisation = false;
     private static String nbpiece = "";
     private JLabel etiquette;
     private static Image logoPiece = new ImageIcon("piece.png").getImage();
@@ -89,19 +94,19 @@ public class MenuPrincipal extends JPanel {
         int boutonHaut = 60;                 // taille des boutons
         int boutonX = (Game.LARGEUR - boutonLarg) / 2;      // centré horizontalement
 
-        JButton boutonLancer = creerBouton("Lancer une partie", e -> lancerPartie.run());
+        boutonLancer = creerBouton("Lancer une partie", e -> lancerPartie.run());
         boutonLancer.setBounds(boutonX, 350, boutonLarg, boutonHaut);
         add(boutonLancer);
 
-        JButton boutonParametres = creerBouton("Paramètres", e -> DispParametres());
+        boutonParametres = creerBouton("Paramètres", e -> DispParametres());
         boutonParametres.setBounds(boutonX, 430, boutonLarg, boutonHaut);
         add(boutonParametres);
 
-        JButton boutonPerso = creerBouton("Personnalisation", e -> DispPersonalisation());
+        boutonPerso = creerBouton("Personnalisation", e -> DispPersonalisation());
         boutonPerso.setBounds(boutonX, 510, boutonLarg, boutonHaut);
         add(boutonPerso);
 
-        JButton boutonQuitter = creerBouton("Quitter", e -> System.exit(0));
+        boutonQuitter = creerBouton("Quitter", e -> System.exit(0));
         boutonQuitter.setBounds(boutonX, 590, boutonLarg, boutonHaut);
         add(boutonQuitter);
 
@@ -137,10 +142,26 @@ public class MenuPrincipal extends JPanel {
         JOptionPane.showMessageDialog(this, "Bientôt disponible !");
     }
 
+    private void majVisibilite() {
+    boolean menu = !afficherParametres && !afficherPersonalisation;
+    for (Component c : new Component[] {boutonLancer, boutonParametres, boutonPerso, boutonQuitter}) {
+        c.setVisible(menu);
+    }
+    for (Component c : new Component[] {boutonCroixParam, texteVolMusique, texteVolSon,titreParametre, sliderSon, sliderMusique}) {
+        c.setVisible(afficherParametres);
+    }
+
+    for (Component c : new Component[] {boutonCroixPerso, boutonPlus, boutonMoins,titrePersonalisation}) {
+        c.setVisible(afficherPersonalisation);
+    }
+    repaint();
+}
+
     private void DispPersonalisation()
     {
         afficherPersonalisation = !afficherPersonalisation; // clic = afficher / masquer
-        
+        majVisibilite();
+        /*
         for (Component c : getComponents()) {
         c.setVisible(!afficherPersonalisation);
         }
@@ -150,7 +171,7 @@ public class MenuPrincipal extends JPanel {
         titrePersonalisation.setVisible(afficherPersonalisation);
         
 
-        repaint();
+        repaint();*/
     }
 
     private void Personnalisation()
@@ -219,7 +240,8 @@ public class MenuPrincipal extends JPanel {
     private void DispParametres()
     {
         afficherParametres = !afficherParametres; // clic = afficher / masquer
-        for (Component c : getComponents()) {
+        majVisibilite();
+        /*for (Component c : getComponents()) {
         c.setVisible(!afficherParametres);
         }
         boutonCroixParam.setVisible(afficherParametres);
@@ -229,7 +251,7 @@ public class MenuPrincipal extends JPanel {
         sliderSon.setVisible(afficherParametres);
         sliderMusique.setVisible(afficherParametres);
 
-        repaint();
+        repaint();*/
     }
 
     private void Parametres()
@@ -258,7 +280,7 @@ public class MenuPrincipal extends JPanel {
         texteVolSon.setVisible(false);
         add(texteVolSon);
 
-        texteVolMusique = new JLabel("Volume du musique :");
+        texteVolMusique = new JLabel("Volume de la musique :");
         texteVolMusique.setFont(new Font("Arial", Font.BOLD, 20));
         texteVolMusique.setForeground(Color.BLACK);
         texteVolMusique.setBounds(85, 470, 200, 30);
