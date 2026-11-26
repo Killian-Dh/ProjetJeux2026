@@ -58,6 +58,14 @@ public class GenerateurPieces {
     }
 }
 
+    public void dessinerEntre(Graphics g, double loin, double proche) {
+        for (Coin piece : pieces) {
+            if (piece.getDistance() > proche && piece.getDistance() <= loin) {
+                piece.dessiner(g);
+            }
+        }
+    }
+
     // Dessiner toutes les pièces
     public void dessiner(Graphics g) {
 

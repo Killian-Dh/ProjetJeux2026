@@ -65,8 +65,7 @@ public class GenerateurObstacles {
         }
     }
 
-    // Obstacles PLUS LOIN que le joueur : dessinés AVANT lui (ils sont derrière)
-    public void dessinerDerriere(Graphics g) {
+    public void dessinerDerriere(Graphics g, GenerateurPieces pieces) {
         // 1. d'abord TOUS les trous : ils sont dans le sol, donc toujours sous le reste
         for (int i = obstacles.size() - 1; i >= 0; i--) {
             Obstacle o = obstacles.get(i);
@@ -74,15 +73,23 @@ public class GenerateurObstacles {
                 o.dessiner(g);
             }
         }
-        // 2. puis les autres obstacles pas encore atteints, du plus loin au plus proche
-        for (int i = obstacles.size() - 1; i >= 0; i--) {
-            Obstacle o = obstacles.get(i);
-            if (!o.estUnTrou() && o.getDistance() > 0) {
-                o.dessiner(g);
-            }
-        }
-    }
 
+        // 2. puis les obstacles ET les pièces, mélangés du plus loin au plus proche
+        ArrayList<Obstacle> tries = new ArrayList<>(obstacles);
+        tries.sort((a, b) -> Double.compare(b.getDistance(), a.getDistance()));   // tri : le plus loin en premier
+
+        double limite = 1000;   // "tout au fond"
+        for (Obstacle o : tries) {
+            if (o.estUnTrou() || o.getDistance() <= 0) {
+                continue;   // les trous sont déjà dessinés, et les obstacles dépassés le seront après le joueur
+            }
+            pieces.dessinerEntre(g, limite, o.getDistance());  // les pièces plus loin que cet obstacle...
+            o.dessiner(g);                                      // ...puis l'obstacle par-dessus
+            limite = o.getDistance();
+        }
+        pieces.dessinerEntre(g, limite, -1000);   // les pièces plus proches que tous les obstacles
+    }
+    
     // Obstacles que le joueur a DÉJÀ PASSÉS : dessinés APRÈS lui (ils sont devant, côté caméra)
     public void dessinerDevant(Graphics g) {
         for (int i = obstacles.size() - 1; i >= 0; i--) {

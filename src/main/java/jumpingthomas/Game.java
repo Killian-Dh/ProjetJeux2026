@@ -240,8 +240,7 @@ public class Game extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         route.dessiner(g, this);   // fond + route de Thomas (remplace l'ancien ciel et l'herbe)
-        generateur.dessinerDerriere(g);
-        generateurPieces.dessiner(g);
+        generateur.dessinerDerriere(g, generateurPieces);
 
        
         g.setColor(Color.RED);
