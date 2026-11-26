@@ -15,6 +15,7 @@ public class GenerateurPieces {
 
     // Nombre de pièces réellement collectées
     private int nombrePiecesCollectees = 0;
+    public int stockPiece = 0;
 
     // Mise à jour des pièces à chaque image
     public void mettreAJour(double vitesse, int couloirJoueur, GenerateurObstacles obstacles) {
@@ -71,7 +72,9 @@ public class GenerateurPieces {
     public void reinitialiser() {
 
         pieces.clear();
+        stockPiece = nombrePiecesCollectees;
         nombrePiecesCollectees = 0;
+
         avantProchainePiece = 0;
     }
 

@@ -27,6 +27,7 @@ public class MenuPrincipal extends JPanel {
     private static ImageIcon dispBouton = new ImageIcon("ButtonType.png");
     private static ImageIcon dispBoutonCroix = new ImageIcon("Croix.png");
     
+    
     private JButton boutonCroixPerso;
     private JButton boutonPlus;
     private static ImageIcon dispBoutonPlus = new ImageIcon("flecheDroite.png");
@@ -157,6 +158,13 @@ public class MenuPrincipal extends JPanel {
         titrePersonalisation.setBounds(Game.LARGEUR/2 -130, 350, 300, 30);
         titrePersonalisation.setVisible(false);
         add(titrePersonalisation);
+
+        titrePersonalisation = new JLabel(":");
+        titrePersonalisation.setFont(new Font("Arial", Font.BOLD, 27));
+        titrePersonalisation.setForeground(Color.BLACK);
+        titrePersonalisation.setBounds(Game.LARGEUR/2 -130, 350, 300, 30);
+        titrePersonalisation.setVisible(false);
+        add(titrePersonalisation);
     }
 
     private void boutonsPerso()
@@ -267,6 +275,7 @@ public class MenuPrincipal extends JPanel {
         boutonCroixParam.setContentAreaFilled(false);
         boutonCroixParam.setBorderPainted(false);
         boutonCroixParam.addActionListener(e -> DispParametres());
+        
         boutonCroixParam.setBounds(330, 620, 35, 35);
         boutonCroixParam.setVisible(false);
         add(boutonCroixParam);
